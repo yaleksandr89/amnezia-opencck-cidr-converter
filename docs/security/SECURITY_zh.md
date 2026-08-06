@@ -1,4 +1,4 @@
-# 安全策略
+# 安全说明
 
 ## 选择语言
 
@@ -6,61 +6,41 @@
 |---|---|---|---|---|---|
 | [Русский](../../.github/SECURITY.md) | [English](./SECURITY_en.md) | [Español](./SECURITY_es.md) | **已选择** | [Français](./SECURITY_fr.md) | [Deutsch](./SECURITY_de.md) |
 
-## 支持的版本
+这是一个由个人维护的小型项目。如果您发现安全问题，请在修复发布前不要公开技术细节。
 
-安全修复仅针对项目的最新发布版本提供。
+## 建议私下报告的问题
 
-| 版本 | 是否支持 |
-|---|---|
-| 最新版本 | 是 |
-| 较旧版本 | 否 |
+- 通过 URL、路径或参数执行任意命令；
+- 绕过 HTTPS 或 `iplist.opencck.org` 域名校验；
+- 将结果写入用户未选择的位置；
+- 输出中出现输入数据里不存在的路由；
+- 发布包被篡改或以不安全方式发布。
 
-## 哪些问题属于漏洞
+普通转换错误、使用问题和功能建议可以发布到 [Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues) 或 [Discussions](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/discussions)。
 
-安全问题包括但不限于：
+## 如何报告
 
-- 通过输入 URL、路径或命令行参数执行任意命令；
-- 绕过 HTTPS 或 `iplist.opencck.org` 域名验证；
-- 未经用户明确指定，将结果写入意外位置；
-- 将 OpenCCK 响应内容作为可执行代码处理；
-- 生成会静默添加输入数据中不存在路由的结果；
-- 篡改发布压缩包或以不安全方式发布压缩包。
-
-普通转换错误、使用问题和功能请求可以发布到 GitHub Issues 或 Discussions，但不得包含敏感信息。
-
-## 报告漏洞
-
-如果仓库提供 GitHub Private Vulnerability Reporting，请优先使用：
+优先使用 GitHub Private Vulnerability Reporting：
 
 1. 打开 **Security and quality**。
 2. 进入 **Advisories**。
-3. 选择 **Report a vulnerability**。
-4. 提交报告，不要在公开 Issue 中发布技术细节。
+3. 点击 **Report a vulnerability**。
+4. 在不创建公开 Issue 的情况下描述问题。
 
-如果无法使用私密报告，请创建一个不包含利用细节的最小公开 Issue，并请求私密沟通渠道。
+如果没有私密报告表单，请创建一个不包含 exploit 或敏感细节的简短 Issue，并请求私下联系渠道。
 
-请勿公开：
+## 建议提供的信息
 
-- 可用的 exploit；
-- 应用程序私有配置；
-- 密钥、密码或令牌；
-- 个人服务器地址；
-- 在修复发布前可能被用于利用漏洞的其他信息。
-
-## 报告内容
-
-如有可能，请提供：
+如条件允许，请提供：
 
 - 发布版本或 commit SHA；
-- 操作系统及运行环境版本：PowerShell 或 Bash；
-- 影响说明；
+- 操作系统和运行环境；
+- 影响的简要说明；
 - 最小复现步骤；
-- 预期行为和实际行为；
-- 已脱敏的输入示例；
-- 已知的可能修复方案。
+- 已脱敏的输入示例。
 
-## 报告处理
+请勿公开密钥、令牌、私有配置或个人服务器地址。
 
-项目维护者会在条件允许时确认并审查报告，不保证固定 SLA。
+## 后续处理
 
-在公开详细信息前，请与项目维护者协调披露。项目不提供漏洞奖励计划。
+我会尽量确认报告、复现问题并准备修复。项目不承诺固定 SLA，也没有漏洞奖励计划。在修复发布前，请协商技术细节的公开时间。

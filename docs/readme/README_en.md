@@ -27,7 +27,7 @@ OpenCCK may return a CIDR value in the `hostname` field:
 }
 ```
 
-During a problematic import, the subnet prefix may be lost. The converter moves the CIDR value to `ip` and creates a unique service name:
+During a problematic import, the subnet prefix may be lost. The converter creates an entry where the CIDR is stored in `ip`:
 
 ```json
 {
@@ -36,32 +36,12 @@ During a problematic import, the subnet prefix may be lost. The converter moves 
 }
 ```
 
-The actual route is stored in `ip`. The `.invalid` hostname is used only as a unique record key.
-
 ## What the converter does
 
-1. Accepts a URL generated at `iplist.opencck.org`.
-2. Validates HTTPS, the domain, the `Amnezia` format, and the `IPv4 CIDR` data type.
-3. Downloads the current JSON list.
-4. Validates IPv4 CIDR entries.
-5. Removes duplicates while preserving the original order.
-6. Moves CIDR values from `hostname` to `ip`.
-7. Generates sequential names such as `route-000001.invalid`.
-8. Writes UTF-8 JSON without BOM.
-
-Both implementations can also convert a local JSON file for development and automated testing.
-
-## Project structure
-
-```text
-bin/                   user-facing launchers
-src/                   native implementations for Windows and Unix systems
-tests/                 tests and fixtures
-docs/readme/           README translations
-docs/contributing/     contribution guide translations
-docs/security/         security policy translations
-.github/               CI, templates, and GitHub community files
-```
+- accepts a URL generated at `iplist.opencck.org`;
+- validates and converts valid IPv4 CIDR entries;
+- removes duplicates while preserving the original order;
+- creates `amnezia-opencck-cidr.json` in the project root, ready for import.
 
 ## Supported systems
 
@@ -71,43 +51,14 @@ docs/security/         security policy translations
 | macOS | `bin/convert-opencck-cidr.sh` | Bash and either `curl` or `wget` |
 | Linux | `bin/convert-opencck-cidr.sh` | Bash and either `curl` or `wget` |
 
-Python or PowerShell does not need to be installed on macOS or Linux. Windows uses PowerShell, while macOS and Linux use the native Bash implementation.
-
-## Interface language
-
-The converter supports Russian and English.
-
-The default value is `auto`:
-
-- Windows uses the current UI culture;
-- macOS and Linux use `LC_ALL`, `LC_MESSAGES`, or `LANG`;
-- English is used when a Russian locale is not detected.
-
-You can select a language explicitly.
-
-Windows:
-
-```powershell
-.\bin\convert-opencck-cidr.cmd `
-  -Language en
-```
-
-macOS and Linux:
-
-```bash
-./bin/convert-opencck-cidr.sh --language en
-```
-
-Accepted values: `auto`, `ru`, `en`.
-
 ## Quick start
 
-### 1. Prepare an OpenCCK URL
+### 1. Prepare the OpenCCK URL
 
 1. Open [iplist.opencck.org](https://iplist.opencck.org/).
 2. Select the required sites and services.
-3. Select the **Amnezia** format.
-4. Select **IPv4 CIDR ranges** as the data type.
+3. Choose the **Amnezia** format.
+4. Choose **IPv4 CIDR ranges**.
 5. Disable **Save as file**.
 6. Copy the long URL from the field at the bottom of the page.
 
@@ -121,15 +72,6 @@ Double-click:
 bin/convert-opencck-cidr.cmd
 ```
 
-Or pass options from a terminal:
-
-```powershell
-.\bin\convert-opencck-cidr.cmd `
-  -SourceUrl "https://iplist.opencck.org/?..." `
-  -OutputPath ".\routes.json" `
-  -Language en
-```
-
 #### macOS and Linux
 
 Allow execution once:
@@ -138,75 +80,30 @@ Allow execution once:
 chmod +x ./bin/convert-opencck-cidr.sh
 ```
 
-Interactive mode:
+Run:
 
 ```bash
 ./bin/convert-opencck-cidr.sh
 ```
 
-Or pass options directly:
+The interface language is detected automatically and can be overridden during parameterized execution.
 
-```bash
-./bin/convert-opencck-cidr.sh \
-  --source-url 'https://iplist.opencck.org/?...' \
-  --output-path './routes.json' \
-  --language en
-```
+Import the generated JSON into the application after the converter finishes.
 
-When no output path is provided, the following file is created in the project root:
-
-```text
-amnezia-opencck-cidr.json
-```
-
-Import the generated JSON into the application.
-
-## Running the implementations directly
-
-### Windows
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\src\convert-opencck-cidr.ps1 `
-  -Language en
-```
-
-Options: `-SourceUrl`, `-InputPath`, `-OutputPath`, `-Language`.
-
-### macOS and Linux
-
-```bash
-bash ./src/convert-opencck-cidr.sh --language en
-```
-
-Options: `--source-url`, `--input-path`, `--output-path`, `--language`.
+Parameters, language selection, direct source execution, project structure, and tests are described in the [advanced usage guide](../guides/advanced-usage_en.md).
 
 ## Limitations
 
 - Only IPv4 CIDR (`data=cidr4`) is supported.
 - Network downloads accept only HTTPS URLs from `iplist.opencck.org`.
 - Network mode depends on OpenCCK availability and response format.
-- **The converter may no longer be needed after the import issue is fixed in the official client.**
+- The converter may no longer be needed after the import issue is fixed in the official client.
 
-## Development
+## Documentation
 
-### Windows tests
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\tests\run-tests.ps1
-```
-
-### macOS and Linux tests
-
-```bash
-chmod +x ./tests/run-tests.sh
-./tests/run-tests.sh
-```
-
-GitHub Actions runs native tests separately on Windows, Ubuntu, and macOS.
-
-Contribution guidelines are available in [CONTRIBUTING.md](../contributing/CONTRIBUTING_en.md).
+- [Advanced usage](../guides/advanced-usage_en.md)
+- [Contributing](../contributing/CONTRIBUTING_en.md)
+- [Security](../security/SECURITY_en.md)
 
 ## Feedback
 

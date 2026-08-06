@@ -27,7 +27,7 @@ OpenCCK kann einen CIDR-Wert im Feld `hostname` zurückgeben:
 }
 ```
 
-Bei einem fehlerhaften Import kann das Subnetzpräfix verloren gehen. Der Konverter verschiebt den CIDR-Wert in das Feld `ip` und erzeugt einen eindeutigen Dienstnamen:
+Bei einem fehlerhaften Import kann das Subnetzpräfix verloren gehen. Der Konverter erstellt einen Eintrag, in dem der CIDR-Wert in `ip` gespeichert wird:
 
 ```json
 {
@@ -36,80 +36,31 @@ Bei einem fehlerhaften Import kann das Subnetzpräfix verloren gehen. Der Konver
 }
 ```
 
-Die eigentliche Route wird in `ip` gespeichert. Der Name unter `.invalid` dient ausschließlich als eindeutiger Schlüssel des Eintrags.
+## Was der Konverter macht
 
-## Funktionsweise des Konverters
-
-1. Übernimmt eine auf `iplist.opencck.org` erzeugte URL.
-2. Prüft HTTPS, die Domain, das Format `Amnezia` und den Datentyp `IPv4 CIDR`.
-3. Lädt die aktuelle JSON-Liste herunter.
-4. Validiert IPv4-CIDR-Einträge.
-5. Entfernt Duplikate und behält die ursprüngliche Reihenfolge bei.
-6. Verschiebt CIDR-Werte von `hostname` nach `ip`.
-7. Erzeugt fortlaufende Namen wie `route-000001.invalid`.
-8. Schreibt das Ergebnis als UTF-8-JSON ohne BOM.
-
-Beide Implementierungen können außerdem eine lokale JSON-Datei für Entwicklung und automatisierte Tests konvertieren.
-
-## Projektstruktur
-
-```text
-bin/                   benutzerseitige Starter
-src/                   native Implementierungen für Windows und Unix-Systeme
-tests/                 Tests und Testdaten
-docs/readme/           README-Übersetzungen
-docs/contributing/     Übersetzungen der Beitragsrichtlinien
-docs/security/         Übersetzungen der Sicherheitsrichtlinie
-.github/               CI, Vorlagen und GitHub-Community-Dateien
-```
+- akzeptiert eine auf `iplist.opencck.org` erzeugte URL;
+- validiert und konvertiert gültige IPv4-CIDR-Einträge;
+- entfernt Duplikate und behält die ursprüngliche Reihenfolge bei;
+- erstellt im Projektstamm die importbereite Datei `amnezia-opencck-cidr.json`.
 
 ## Unterstützte Systeme
 
-| System | Starter | Anforderungen |
+| System | Start | Voraussetzungen |
 |---|---|---|
 | Windows 10/11 | `bin/convert-opencck-cidr.cmd` | Windows PowerShell 5.1 oder PowerShell 7 |
 | macOS | `bin/convert-opencck-cidr.sh` | Bash und `curl` oder `wget` |
 | Linux | `bin/convert-opencck-cidr.sh` | Bash und `curl` oder `wget` |
-
-Unter macOS und Linux müssen weder Python noch PowerShell zusätzlich installiert werden. Windows verwendet PowerShell, macOS und Linux verwenden die native Bash-Implementierung.
-
-## Sprache der Benutzeroberfläche
-
-Der Konverter unterstützt eine russische und eine englische Oberfläche.
-
-Der Standardwert ist `auto`:
-
-- Windows verwendet die aktuelle UI-Kultur;
-- macOS und Linux verwenden `LC_ALL`, `LC_MESSAGES` oder `LANG`;
-- Englisch wird verwendet, wenn keine russische Locale erkannt wird.
-
-Die Sprache kann auch ausdrücklich angegeben werden.
-
-Windows:
-
-```powershell
-.\bin\convert-opencck-cidr.cmd `
-  -Language en
-```
-
-macOS und Linux:
-
-```bash
-./bin/convert-opencck-cidr.sh --language en
-```
-
-Zulässige Werte: `auto`, `ru`, `en`.
 
 ## Schnellstart
 
 ### 1. OpenCCK-URL vorbereiten
 
 1. Öffnen Sie [iplist.opencck.org](https://iplist.opencck.org/).
-2. Wählen Sie die benötigten Websites und Dienste aus.
+2. Wählen Sie die benötigten Websites und Dienste.
 3. Wählen Sie das Format **Amnezia**.
-4. Wählen Sie **IPv4-CIDR-Bereiche** als Datentyp.
+4. Wählen Sie **IPv4-CIDR-Bereiche**.
 5. Deaktivieren Sie **Als Datei speichern**.
-6. Kopieren Sie die lange URL aus dem Feld am unteren Seitenrand.
+6. Kopieren Sie die lange URL aus dem unteren Feld.
 
 ### 2. Konverter starten
 
@@ -121,92 +72,38 @@ Doppelklicken Sie auf:
 bin/convert-opencck-cidr.cmd
 ```
 
-Oder übergeben Sie die Parameter im Terminal:
-
-```powershell
-.\bin\convert-opencck-cidr.cmd `
-  -SourceUrl "https://iplist.opencck.org/?..." `
-  -OutputPath ".\routes.json" `
-  -Language en
-```
-
 #### macOS und Linux
 
-Erteilen Sie einmalig die Ausführungsberechtigung:
+Erlauben Sie die Ausführung einmalig:
 
 ```bash
 chmod +x ./bin/convert-opencck-cidr.sh
 ```
 
-Interaktiver Modus:
+Starten Sie:
 
 ```bash
 ./bin/convert-opencck-cidr.sh
 ```
 
-Oder übergeben Sie die Parameter direkt:
+Die Sprache der Oberfläche wird automatisch erkannt und kann beim parametrisierten Start manuell festgelegt werden.
 
-```bash
-./bin/convert-opencck-cidr.sh \
-  --source-url 'https://iplist.opencck.org/?...' \
-  --output-path './routes.json' \
-  --language en
-```
+Importieren Sie anschließend die erzeugte JSON-Datei in die Anwendung.
 
-Wenn kein Ausgabepfad angegeben wird, wird im Projektstamm die folgende Datei erstellt:
-
-```text
-amnezia-opencck-cidr.json
-```
-
-Importieren Sie das erzeugte JSON in die Anwendung.
-
-## Implementierungen direkt ausführen
-
-### Windows
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\src\convert-opencck-cidr.ps1 `
-  -Language en
-```
-
-Parameter: `-SourceUrl`, `-InputPath`, `-OutputPath`, `-Language`.
-
-### macOS und Linux
-
-```bash
-bash ./src/convert-opencck-cidr.sh --language en
-```
-
-Parameter: `--source-url`, `--input-path`, `--output-path`, `--language`.
+Parameter, Sprachauswahl, direkter Start der Quelldateien, Projektstruktur und Tests sind im [Leitfaden zur erweiterten Verwendung](../guides/advanced-usage_de.md) beschrieben.
 
 ## Einschränkungen
 
-- Es wird ausschließlich IPv4 CIDR (`data=cidr4`) unterstützt.
-- Netzwerkdownloads akzeptieren nur HTTPS-URLs der Domain `iplist.opencck.org`.
+- Es wird nur IPv4 CIDR (`data=cidr4`) unterstützt.
+- Netzwerk-Downloads akzeptieren nur HTTPS-URLs von `iplist.opencck.org`.
 - Der Netzwerkmodus hängt von der Verfügbarkeit und dem Antwortformat von OpenCCK ab.
-- **Nach einer Korrektur des Importproblems im offiziellen Client wird der Konverter möglicherweise nicht mehr benötigt.**
+- Nach einer Korrektur im offiziellen Client wird der Konverter möglicherweise nicht mehr benötigt.
 
-## Entwicklung
+## Dokumentation
 
-### Tests unter Windows
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\tests\run-tests.ps1
-```
-
-### Tests unter macOS und Linux
-
-```bash
-chmod +x ./tests/run-tests.sh
-./tests/run-tests.sh
-```
-
-GitHub Actions führt native Tests getrennt unter Windows, Ubuntu und macOS aus.
-
-Die Beitragsrichtlinien finden Sie in [CONTRIBUTING.md](../contributing/CONTRIBUTING_de.md).
+- [Erweiterte Verwendung](../guides/advanced-usage_de.md)
+- [Mitwirken](../contributing/CONTRIBUTING_de.md)
+- [Sicherheit](../security/SECURITY_de.md)
 
 ## Rückmeldung
 
@@ -216,5 +113,5 @@ Die Beitragsrichtlinien finden Sie in [CONTRIBUTING.md](../contributing/CONTRIBU
 ---
 
 <p align="center">
-  Wenn dieses Tool geholfen hat, geben Sie dem Repository einen Stern, damit andere Entwickler es leichter finden. 🤘
+  Wenn dieses Werkzeug geholfen hat, geben Sie dem Repository einen Stern, damit andere Entwickler es leichter finden. 🤘
 </p>
