@@ -37,7 +37,12 @@ try {
         throw 'Converter did not create the output file.'
     }
 
-    $items = @([System.IO.File]::ReadAllText($output) | ConvertFrom-Json)
+    $parsedItems = [System.IO.File]::ReadAllText($output) | ConvertFrom-Json
+    $items = if ($parsedItems -is [System.Array]) {
+        $parsedItems
+    } else {
+        @($parsedItems)
+    }
 
     Assert-Equal 3 $items.Count 'Unexpected number of converted routes.'
     Assert-Equal 'route-000001.invalid' $items[0].hostname 'Unexpected first hostname.'
