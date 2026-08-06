@@ -3,6 +3,12 @@
 [![CI](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
+## Выберите язык
+
+| Русский | English | Español | 中文 | Français | Deutsch |
+|---|---|---|---|---|---|
+| **Выбран** | [English](docs/readme/README_en.md) | [Español](docs/readme/README_es.md) | [中文](docs/readme/README_zh.md) | [Français](docs/readme/README_fr.md) | [Deutsch](docs/readme/README_de.md) |
+
 Конвертер IPv4 CIDR-списков OpenCCK в JSON для корректного импорта в AmneziaVPN 5.x.
 
 Проект не изменяет клиент и не является его патчем. Он преобразует список перед импортом.
@@ -48,13 +54,14 @@ OpenCCK может вернуть CIDR в поле `hostname`:
 ## Структура проекта
 
 ```text
-bin/        пользовательские точки запуска
-src/        нативные реализации для Windows и Unix-систем
-tests/      тесты и тестовые данные
-.github/    CI, шаблоны и служебные файлы GitHub
+bin/                   пользовательские точки запуска
+src/                   нативные реализации для Windows и Unix-систем
+tests/                 тесты и тестовые данные
+docs/readme/           переводы README
+docs/contributing/     переводы правил участия
+docs/security/         переводы политики безопасности
+.github/               CI, шаблоны и служебные файлы GitHub
 ```
-
-Каталог `docs/` будет добавлен вместе с мультиязычной документацией.
 
 ## Поддерживаемые системы
 
@@ -65,6 +72,33 @@ tests/      тесты и тестовые данные
 | Linux | `bin/convert-opencck-cidr.sh` | Bash и `curl` либо `wget` |
 
 Дополнительно устанавливать Python или PowerShell в macOS/Linux не требуется. Windows использует PowerShell, а macOS и Linux — нативный Bash-сценарий.
+
+## Язык интерфейса
+
+Конвертер поддерживает русский и английский интерфейс.
+
+По умолчанию используется `auto`:
+
+- Windows — язык определяется по текущей UI-культуре;
+- macOS и Linux — по `LC_ALL`, `LC_MESSAGES` или `LANG`;
+- если русский язык не обнаружен, используется английский.
+
+Язык можно указать явно.
+
+Windows:
+
+```powershell
+.\bin\convert-opencck-cidr.cmd `
+  -Language ru
+```
+
+macOS и Linux:
+
+```bash
+./bin/convert-opencck-cidr.sh --language ru
+```
+
+Допустимые значения: `auto`, `ru`, `en`.
 
 ## Быстрый старт
 
@@ -92,7 +126,8 @@ bin/convert-opencck-cidr.cmd
 ```powershell
 .\bin\convert-opencck-cidr.cmd `
   -SourceUrl "https://iplist.opencck.org/?..." `
-  -OutputPath ".\routes.json"
+  -OutputPath ".\routes.json" `
+  -Language ru
 ```
 
 #### macOS и Linux
@@ -114,7 +149,8 @@ chmod +x ./bin/convert-opencck-cidr.sh
 ```bash
 ./bin/convert-opencck-cidr.sh \
   --source-url 'https://iplist.opencck.org/?...' \
-  --output-path './routes.json'
+  --output-path './routes.json' \
+  --language ru
 ```
 
 Если путь не указан, в корне проекта создаётся файл:
@@ -131,18 +167,19 @@ amnezia-opencck-cidr.json
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\src\convert-opencck-cidr.ps1
+  -File .\src\convert-opencck-cidr.ps1 `
+  -Language ru
 ```
 
-Параметры: `-SourceUrl`, `-InputPath`, `-OutputPath`.
+Параметры: `-SourceUrl`, `-InputPath`, `-OutputPath`, `-Language`.
 
 ### macOS и Linux
 
 ```bash
-bash ./src/convert-opencck-cidr.sh
+bash ./src/convert-opencck-cidr.sh --language ru
 ```
 
-Параметры: `--source-url`, `--input-path`, `--output-path`.
+Параметры: `--source-url`, `--input-path`, `--output-path`, `--language`.
 
 ## Ограничения
 

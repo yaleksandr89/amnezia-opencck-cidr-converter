@@ -1,5 +1,5 @@
-name: Сообщить об ошибке
-description: Воспроизводимая проблема в работе конвертера
+name: Bug report / Сообщить об ошибке
+description: Reproducible converter issue / Воспроизводимая проблема в работе конвертера
 title: "[Bug]: "
 labels:
   - bug
@@ -7,91 +7,93 @@ body:
   - type: markdown
     attributes:
       value: |
+        Thank you for the report. Do not publish keys, tokens, personal server addresses, or other sensitive data.
+
         Спасибо за отчёт. Не публикуйте ключи, токены, адреса личных серверов и другие чувствительные данные.
 
   - type: dropdown
     id: operating-system
     attributes:
-      label: Операционная система
+      label: Operating system / Операционная система
       options:
         - Windows
         - macOS
         - Linux
-        - Другая
+        - Other / Другая
     validations:
       required: true
 
   - type: input
     id: os-version
     attributes:
-      label: Версия операционной системы
-      placeholder: Например, Windows 11 24H2 или Ubuntu 24.04
+      label: Operating system version / Версия операционной системы
+      placeholder: Windows 11 24H2 or Ubuntu 24.04
     validations:
       required: true
 
   - type: dropdown
     id: runtime
     attributes:
-      label: Среда запуска
+      label: Runtime / Среда запуска
       options:
         - Windows PowerShell 5.1
         - PowerShell 7
         - Bash
-        - Другая
+        - Other / Другая
     validations:
       required: true
 
   - type: input
     id: runtime-version
     attributes:
-      label: Версия среды запуска
-      description: Для PowerShell используйте `$PSVersionTable.PSVersion`, для Bash — `bash --version`.
-      placeholder: Например, 5.1, 7.6.3 или GNU bash 5.2
+      label: Runtime version / Версия среды запуска
+      description: Use `$PSVersionTable.PSVersion` for PowerShell or `bash --version` for Bash.
+      placeholder: 5.1, 7.6.3, or GNU bash 5.2
     validations:
       required: true
 
   - type: input
     id: project-version
     attributes:
-      label: Версия конвертера
-      placeholder: Например, v0.1.0 или commit SHA
+      label: Converter version / Версия конвертера
+      placeholder: v0.1.0 or commit SHA
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Шаги воспроизведения
-      placeholder: Опишите минимальную последовательность действий.
+      label: Reproduction steps / Шаги воспроизведения
+      placeholder: Describe the minimum sequence of actions. / Опишите минимальную последовательность действий.
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: Ожидаемый результат
+      label: Expected result / Ожидаемый результат
     validations:
       required: true
 
   - type: textarea
     id: actual
     attributes:
-      label: Фактический результат
+      label: Actual result / Фактический результат
     validations:
       required: true
 
   - type: textarea
     id: logs
     attributes:
-      label: Обезличенный вывод или логи
+      label: Sanitized output or logs / Обезличенный вывод или логи
       render: shell
 
   - type: checkboxes
     id: checks
     attributes:
-      label: Проверки
+      label: Checks / Проверки
       options:
-        - label: Я удалил из примеров чувствительные данные.
+        - label: I removed sensitive data from all examples. / Я удалил из примеров чувствительные данные.
           required: true
-        - label: Я проверил существующие Issues и не нашёл такой же проблемы.
+        - label: I searched existing Issues and found no duplicate. / Я проверил существующие Issues и не нашёл такой же проблемы.
           required: true

@@ -1,5 +1,5 @@
-name: Предложить улучшение
-description: Новый сценарий или улучшение существующего поведения
+name: Feature request / Предложить улучшение
+description: New use case or improvement / Новый сценарий или улучшение существующего поведения
 title: "[Feature]: "
 labels:
   - enhancement
@@ -7,27 +7,27 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Какую проблему решает предложение
-      description: Опишите пользовательский сценарий, а не только желаемую реализацию.
+      label: Problem to solve / Какую проблему решает предложение
+      description: Describe the user scenario, not only the desired implementation. / Опишите пользовательский сценарий, а не только желаемую реализацию.
     validations:
       required: true
 
   - type: textarea
     id: solution
     attributes:
-      label: Предлагаемое решение
+      label: Proposed solution / Предлагаемое решение
     validations:
       required: true
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Рассмотренные альтернативы
+      label: Alternatives considered / Рассмотренные альтернативы
 
   - type: checkboxes
     id: checks
     attributes:
-      label: Проверки
+      label: Checks / Проверки
       options:
-        - label: Я проверил существующие Issues и Discussions.
+        - label: I searched existing Issues and Discussions. / Я проверил существующие Issues и Discussions.
           required: true
