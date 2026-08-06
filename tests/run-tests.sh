@@ -19,24 +19,30 @@ bash -n "$LAUNCHER"
 
 bash "$CONVERTER" \
     --input-path "$FIXTURE" \
-    --output-path "$TEMP_DIR/source-result.json"
+    --output-path "$TEMP_DIR/source-result.json" \
+    --language en
 
 cmp -s "$EXPECTED" "$TEMP_DIR/source-result.json" \
     || { diff -u "$EXPECTED" "$TEMP_DIR/source-result.json"; exit 1; }
 
 bash "$LAUNCHER" \
     --input-path "$FIXTURE" \
-    --output-path "$TEMP_DIR/launcher-result.json"
+    --output-path "$TEMP_DIR/launcher-result.json" \
+    --language ru
 
 cmp -s "$EXPECTED" "$TEMP_DIR/launcher-result.json" \
     || { diff -u "$EXPECTED" "$TEMP_DIR/launcher-result.json"; exit 1; }
+
+bash "$CONVERTER" --language en --help | grep -q '^Usage:'
+bash "$CONVERTER" --language ru --help | grep -q '^Использование:'
 
 FIRST_BYTES=$(od -An -tx1 -N3 "$TEMP_DIR/source-result.json" | tr -d ' \n')
 [ "$FIRST_BYTES" != "efbbbf" ] || { echo 'Output JSON must be UTF-8 without BOM.' >&2; exit 1; }
 
 if bash "$CONVERTER" \
     --source-url 'https://example.com/?format=amnezia&data=cidr4&site=test' \
-    --output-path "$TEMP_DIR/invalid.json" >/dev/null 2>&1; then
+    --output-path "$TEMP_DIR/invalid.json" \
+    --language en >/dev/null 2>&1; then
     echo 'Invalid source domain was accepted.' >&2
     exit 1
 fi

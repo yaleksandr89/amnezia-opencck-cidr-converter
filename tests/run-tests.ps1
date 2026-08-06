@@ -1,4 +1,4 @@
-#requires -Version 5.1
+﻿#requires -Version 5.1
 [CmdletBinding()]
 param()
 
@@ -27,11 +27,12 @@ $converter = Join-Path $repositoryRoot 'src/convert-opencck-cidr.ps1'
 $fixture = Join-Path $PSScriptRoot 'fixtures/opencck-sample.json'
 $tempDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('amnezia-opencck-tests-' + [Guid]::NewGuid().ToString('N'))
 $output = Join-Path $tempDirectory 'result.json'
+$russianOutput = Join-Path $tempDirectory 'result-ru.json'
 
 try {
     New-Item -ItemType Directory -Path $tempDirectory -Force | Out-Null
 
-    & $converter -InputPath $fixture -OutputPath $output
+    & $converter -InputPath $fixture -OutputPath $output -Language en
 
     if (-not (Test-Path -LiteralPath $output)) {
         throw 'Converter did not create the output file.'
@@ -56,6 +57,18 @@ try {
     if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
         throw 'Output JSON must be UTF-8 without BOM.'
     }
+
+    & $converter -InputPath $fixture -OutputPath $russianOutput -Language ru
+
+    if (-not (Test-Path -LiteralPath $russianOutput)) {
+        throw 'Converter did not create the output file with Russian UI.'
+    }
+
+    Assert-Equal (
+        [System.IO.File]::ReadAllText($output)
+    ) (
+        [System.IO.File]::ReadAllText($russianOutput)
+    ) 'Localized runs produced different JSON.'
 
     Write-Host 'All tests passed.' -ForegroundColor Green
 }

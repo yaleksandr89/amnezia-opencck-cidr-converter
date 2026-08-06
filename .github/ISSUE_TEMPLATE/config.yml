@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Вопрос по использованию
+  - name: Usage question / Вопрос по использованию
     url: https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/discussions/categories/q-a
-    about: Для вопросов по запуску и использованию конвертера используйте Discussions.
-  - name: Общее обсуждение
+    about: Use Discussions for setup and usage questions. / Для вопросов по запуску и использованию используйте Discussions.
+  - name: General discussion / Общее обсуждение
     url: https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/discussions
-    about: Идеи и обсуждения, которые не являются воспроизводимой ошибкой.
+    about: Ideas and discussions that are not reproducible bugs. / Идеи и обсуждения, которые не являются воспроизводимой ошибкой.

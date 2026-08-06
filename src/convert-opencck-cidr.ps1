@@ -10,6 +10,9 @@ the CIDR value into "ip" and assigns a unique service name under the reserved
 .invalid domain to "hostname".
 
 This is the native Windows implementation. macOS and Linux use the Bash implementation.
+
+.PARAMETER Language
+Interface language: auto, ru, or en. Auto uses the current Windows UI culture.
 #>
 
 [CmdletBinding(DefaultParameterSetName = 'Url')]
@@ -21,7 +24,11 @@ param(
     [string]$InputPath,
 
     [Parameter()]
-    [string]$OutputPath
+    [string]$OutputPath,
+
+    [Parameter()]
+    [ValidateSet('auto', 'ru', 'en')]
+    [string]$Language = 'auto'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -31,6 +38,98 @@ try {
     [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
 } catch {
     # Console encoding does not affect conversion.
+}
+
+$ScriptLanguage = if ($Language -eq 'auto') {
+    if ([System.Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru') {
+        'ru'
+    } else {
+        'en'
+    }
+} else {
+    $Language
+}
+
+$Messages = @{
+    ru = @{
+        Title = ' Конвертер CIDR OpenCCK для AmneziaVPN'
+        Open = '1. Откройте: https://iplist.opencck.org/'
+        Select = '2. Выберите нужные ресурсы.'
+        Format = '3. Формат: Amnezia.'
+        DataType = '4. Тип данных: IP-зоны IPv4 (CIDR).'
+        SaveWarning = 'ВАЖНО: пункт «Сохранить как файл» должен быть выключен.'
+        CopyUrl = 'Скопируйте длинную ссылку из нижнего поля страницы.'
+        PasteUrl = 'Вставьте ссылку OpenCCK и нажмите Enter'
+        UrlEmpty = 'Ссылка не введена.'
+        UrlInvalid = 'Введена некорректная ссылка.'
+        UrlHttps = 'Ссылка должна начинаться с https://'
+        UrlHost = 'Ожидалась ссылка с сайта iplist.opencck.org'
+        UrlFormat = 'В ссылке не найден параметр format=amnezia. Выберите формат «Amnezia».'
+        UrlData = 'В ссылке не найден параметр data=cidr4. Выберите «IP-зоны IPv4 (CIDR)».'
+        UrlSites = 'В ссылке нет выбранных ресурсов (параметров site=...).'
+        ReadFile = 'Читаю локальный файл: {0}'
+        EmptyFile = 'Входной JSON-файл пуст.'
+        Downloading = 'Скачиваю актуальный список OpenCCK...'
+        EmptyResponse = 'OpenCCK вернул пустой ответ.'
+        MissingHostname = 'Пропущена запись без поля hostname.'
+        InvalidCidr = 'Пропущена некорректная IPv4 CIDR-запись: {0}'
+        NoValidRoutes = 'Не удалось получить ни одной корректной CIDR-записи.'
+        Done = 'Готово.'
+        RouteCount = 'Количество маршрутов: {0}'
+        File = 'Файл: {0}'
+        Import = 'Импортируйте созданный JSON в приложение.'
+        Error = 'Ошибка: {0}'
+    }
+    en = @{
+        Title = ' OpenCCK CIDR Converter for AmneziaVPN'
+        Open = '1. Open: https://iplist.opencck.org/'
+        Select = '2. Select the required resources.'
+        Format = '3. Format: Amnezia.'
+        DataType = '4. Data type: IPv4 CIDR ranges.'
+        SaveWarning = 'IMPORTANT: disable the "Save as file" option.'
+        CopyUrl = 'Copy the long URL from the field at the bottom of the page.'
+        PasteUrl = 'Paste the OpenCCK URL and press Enter'
+        UrlEmpty = 'The URL was not provided.'
+        UrlInvalid = 'The URL is invalid.'
+        UrlHttps = 'The URL must start with https://'
+        UrlHost = 'Expected a URL from iplist.opencck.org'
+        UrlFormat = 'The URL does not contain format=amnezia. Select the Amnezia format.'
+        UrlData = 'The URL does not contain data=cidr4. Select IPv4 CIDR ranges.'
+        UrlSites = 'The URL does not contain selected resources (site=... parameters).'
+        ReadFile = 'Reading local file: {0}'
+        EmptyFile = 'The input JSON file is empty.'
+        Downloading = 'Downloading the current OpenCCK list...'
+        EmptyResponse = 'OpenCCK returned an empty response.'
+        MissingHostname = 'Skipped an entry without the hostname field.'
+        InvalidCidr = 'Skipped invalid IPv4 CIDR entry: {0}'
+        NoValidRoutes = 'No valid CIDR entries were found.'
+        Done = 'Done.'
+        RouteCount = 'Route count: {0}'
+        File = 'File: {0}'
+        Import = 'Import the generated JSON into the application.'
+        Error = 'Error: {0}'
+    }
+}
+
+function Get-Message {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Key,
+
+        [Parameter()]
+        [object[]]$Arguments
+    )
+
+    $template = $Messages[$ScriptLanguage][$Key]
+    if ($null -eq $template) {
+        throw "Unknown message key: $Key"
+    }
+
+    if ($null -ne $Arguments -and $Arguments.Count -gt 0) {
+        return ($template -f $Arguments)
+    }
+
+    return $template
 }
 
 $ScriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -63,19 +162,19 @@ function Resolve-OutputPath {
 function Read-OpenCckUrl {
     Write-Host ''
     Write-Host '============================================================'
-    Write-Host ' Конвертер CIDR OpenCCK для AmneziaVPN'
+    Write-Host (Get-Message 'Title')
     Write-Host '============================================================'
     Write-Host ''
-    Write-Host '1. Откройте: https://iplist.opencck.org/'
-    Write-Host '2. Выберите нужные ресурсы.'
-    Write-Host '3. Формат: Amnezia.'
-    Write-Host '4. Тип данных: IP-зоны IPv4 (CIDR).'
+    Write-Host (Get-Message 'Open')
+    Write-Host (Get-Message 'Select')
+    Write-Host (Get-Message 'Format')
+    Write-Host (Get-Message 'DataType')
     Write-Host ''
-    Write-Host 'ВАЖНО: пункт «Сохранить как файл» должен быть выключен.' -ForegroundColor Yellow
-    Write-Host 'Скопируйте длинную ссылку из нижнего поля страницы.'
+    Write-Host (Get-Message 'SaveWarning') -ForegroundColor Yellow
+    Write-Host (Get-Message 'CopyUrl')
     Write-Host ''
 
-    return Read-Host 'Вставьте ссылку OpenCCK и нажмите Enter'
+    return Read-Host (Get-Message 'PasteUrl')
 }
 
 function ConvertFrom-QueryString {
@@ -116,7 +215,7 @@ function Normalize-SourceUrl {
     )
 
     if ([string]::IsNullOrWhiteSpace($Value)) {
-        throw 'Ссылка не введена.'
+        throw (Get-Message 'UrlEmpty')
     }
 
     $normalized = $Value.Trim()
@@ -130,31 +229,31 @@ function Normalize-SourceUrl {
 
     $uri = $null
     if (-not [System.Uri]::TryCreate($normalized, [System.UriKind]::Absolute, [ref]$uri)) {
-        throw 'Введена некорректная ссылка.'
+        throw (Get-Message 'UrlInvalid')
     }
 
     if ($uri.Scheme -ine 'https') {
-        throw 'Ссылка должна начинаться с https://'
+        throw (Get-Message 'UrlHttps')
     }
 
     if ($uri.DnsSafeHost -ine 'iplist.opencck.org') {
-        throw 'Ожидалась ссылка с сайта iplist.opencck.org'
+        throw (Get-Message 'UrlHost')
     }
 
     $parameters = ConvertFrom-QueryString -Query $uri.Query
 
     if (-not $parameters.ContainsKey('format') -or
         -not ($parameters['format'] -icontains 'amnezia')) {
-        throw 'В ссылке не найден параметр format=amnezia. Выберите формат «Amnezia».'
+        throw (Get-Message 'UrlFormat')
     }
 
     if (-not $parameters.ContainsKey('data') -or
         -not ($parameters['data'] -icontains 'cidr4')) {
-        throw 'В ссылке не найден параметр data=cidr4. Выберите «IP-зоны IPv4 (CIDR)».'
+        throw (Get-Message 'UrlData')
     }
 
     if (-not $parameters.ContainsKey('site') -or $parameters['site'].Count -eq 0) {
-        throw 'В ссылке нет выбранных ресурсов (параметров site=...).'
+        throw (Get-Message 'UrlSites')
     }
 
     return $uri.AbsoluteUri
@@ -189,11 +288,11 @@ function Read-SourceItems {
 
     if (-not [string]::IsNullOrWhiteSpace($Path)) {
         $resolvedInputPath = (Resolve-Path -LiteralPath $Path).Path
-        Write-Host "Читаю локальный файл: $resolvedInputPath"
+        Write-Host (Get-Message 'ReadFile' @($resolvedInputPath))
 
         $rawJson = [System.IO.File]::ReadAllText($resolvedInputPath)
         if ([string]::IsNullOrWhiteSpace($rawJson)) {
-            throw 'Входной JSON-файл пуст.'
+            throw (Get-Message 'EmptyFile')
         }
 
         return @($rawJson | ConvertFrom-Json)
@@ -204,11 +303,11 @@ function Read-SourceItems {
     # Required by some older Windows PowerShell installations; harmless in PowerShell 7.
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-    Write-Host 'Скачиваю актуальный список OpenCCK...'
+    Write-Host (Get-Message 'Downloading')
     $response = Invoke-RestMethod -Uri $normalizedUrl -Method Get -TimeoutSec 120
 
     if ($null -eq $response) {
-        throw 'OpenCCK вернул пустой ответ.'
+        throw (Get-Message 'EmptyResponse')
     }
 
     return @($response)
@@ -231,7 +330,7 @@ function Convert-OpenCckItems {
 
         $hostnameProperty = $item.PSObject.Properties['hostname']
         if ($null -eq $hostnameProperty) {
-            Write-Warning 'Пропущена запись без поля hostname.'
+            Write-Warning (Get-Message 'MissingHostname')
             continue
         }
 
@@ -243,7 +342,7 @@ function Convert-OpenCckItems {
         $cidr = $cidr.Trim()
 
         if (-not (Test-IPv4Cidr -Value $cidr)) {
-            Write-Warning "Пропущена некорректная IPv4 CIDR-запись: $cidr"
+            Write-Warning (Get-Message 'InvalidCidr' @($cidr))
             continue
         }
 
@@ -271,7 +370,7 @@ function Write-ResultJson {
     )
 
     if ($Items.Count -eq 0) {
-        throw 'Не удалось получить ни одной корректной CIDR-записи.'
+        throw (Get-Message 'NoValidRoutes')
     }
 
     $outputDirectory = Split-Path -Parent $Path
@@ -302,14 +401,14 @@ try {
     Write-ResultJson -Items $result -Path $OutputPath
 
     Write-Host ''
-    Write-Host 'Готово.' -ForegroundColor Green
-    Write-Host "Количество маршрутов: $($result.Count)"
-    Write-Host "Файл: $OutputPath"
+    Write-Host (Get-Message 'Done') -ForegroundColor Green
+    Write-Host (Get-Message 'RouteCount' @($result.Count))
+    Write-Host (Get-Message 'File' @($OutputPath))
     Write-Host ''
-    Write-Host 'Импортируйте созданный JSON в приложение.'
+    Write-Host (Get-Message 'Import')
 }
 catch {
     Write-Host ''
-    Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host (Get-Message 'Error' @($_.Exception.Message)) -ForegroundColor Red
     exit 1
 }

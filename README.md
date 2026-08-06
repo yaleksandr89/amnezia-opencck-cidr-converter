@@ -3,6 +3,20 @@
 [![CI](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
+<p align="center">
+  <img
+    src="docs/assets/readme-cover.png"
+    alt="Amnezia OpenCCK CIDR Converter — OpenCCK IPv4 CIDR to JSON converter for AmneziaVPN 5.x"
+    width="100%"
+  >
+</p>
+
+## Выберите язык
+
+| Русский | English | Español | 中文 | Français | Deutsch |
+|---|---|---|---|---|---|
+| **Выбран** | [English](docs/readme/README_en.md) | [Español](docs/readme/README_es.md) | [中文](docs/readme/README_zh.md) | [Français](docs/readme/README_fr.md) | [Deutsch](docs/readme/README_de.md) |
+
 Конвертер IPv4 CIDR-списков OpenCCK в JSON для корректного импорта в AmneziaVPN 5.x.
 
 Проект не изменяет клиент и не является его патчем. Он преобразует список перед импортом.
@@ -21,7 +35,7 @@ OpenCCK может вернуть CIDR в поле `hostname`:
 }
 ```
 
-При проблемном импорте маска подсети может потеряться. Конвертер переносит CIDR в поле `ip` и создаёт уникальное служебное имя:
+При проблемном импорте маска подсети может потеряться. Конвертер формирует запись, в которой CIDR хранится в поле `ip`:
 
 ```json
 {
@@ -30,41 +44,20 @@ OpenCCK может вернуть CIDR в поле `hostname`:
 }
 ```
 
-Реальный маршрут хранится в `ip`. Имя под доменом `.invalid` используется только как уникальный ключ записи.
-
 ## Что делает конвертер
 
-1. Принимает ссылку, сформированную на `iplist.opencck.org`.
-2. Проверяет HTTPS, домен, формат `Amnezia` и тип данных `IPv4 CIDR`.
-3. Скачивает актуальный JSON.
-4. Проверяет IPv4 CIDR-записи.
-5. Удаляет дубли, сохраняя исходный порядок.
-6. Переносит CIDR из `hostname` в `ip`.
-7. Создаёт последовательные имена `route-000001.invalid`.
-8. Записывает результат в UTF-8 JSON без BOM.
-
-Для разработки и автоматической проверки обе реализации также поддерживают преобразование локального JSON.
-
-## Структура проекта
-
-```text
-bin/        пользовательские точки запуска
-src/        нативные реализации для Windows и Unix-систем
-tests/      тесты и тестовые данные
-.github/    CI, шаблоны и служебные файлы GitHub
-```
-
-Каталог `docs/` будет добавлен вместе с мультиязычной документацией.
+- принимает ссылку, сформированную на `iplist.opencck.org`;
+- проверяет и преобразует корректные IPv4 CIDR-записи;
+- удаляет дубли, сохраняя исходный порядок;
+- создаёт в корне проекта файл `amnezia-opencck-cidr.json`, готовый для импорта.
 
 ## Поддерживаемые системы
 
-| Система | Запуск | Системные требования |
+| Система | Запуск | Требования |
 |---|---|---|
 | Windows 10/11 | `bin/convert-opencck-cidr.cmd` | Windows PowerShell 5.1 или PowerShell 7 |
 | macOS | `bin/convert-opencck-cidr.sh` | Bash и `curl` либо `wget` |
 | Linux | `bin/convert-opencck-cidr.sh` | Bash и `curl` либо `wget` |
-
-Дополнительно устанавливать Python или PowerShell в macOS/Linux не требуется. Windows использует PowerShell, а macOS и Linux — нативный Bash-сценарий.
 
 ## Быстрый старт
 
@@ -87,14 +80,6 @@ tests/      тесты и тестовые данные
 bin/convert-opencck-cidr.cmd
 ```
 
-Или передайте параметры из терминала:
-
-```powershell
-.\bin\convert-opencck-cidr.cmd `
-  -SourceUrl "https://iplist.opencck.org/?..." `
-  -OutputPath ".\routes.json"
-```
-
 #### macOS и Linux
 
 Разрешите запуск один раз:
@@ -103,73 +88,24 @@ bin/convert-opencck-cidr.cmd
 chmod +x ./bin/convert-opencck-cidr.sh
 ```
 
-Интерактивный запуск:
+Запустите:
 
 ```bash
 ./bin/convert-opencck-cidr.sh
 ```
 
-Или передайте параметры:
+Язык интерфейса определяется автоматически. Его можно указать вручную при параметризованном запуске.
 
-```bash
-./bin/convert-opencck-cidr.sh \
-  --source-url 'https://iplist.opencck.org/?...' \
-  --output-path './routes.json'
-```
+После завершения импортируйте созданный JSON в приложение.
 
-Если путь не указан, в корне проекта создаётся файл:
-
-```text
-amnezia-opencck-cidr.json
-```
-
-После формирования импортируйте полученный JSON в приложение.
-
-## Прямой запуск исходников
-
-### Windows
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\src\convert-opencck-cidr.ps1
-```
-
-Параметры: `-SourceUrl`, `-InputPath`, `-OutputPath`.
-
-### macOS и Linux
-
-```bash
-bash ./src/convert-opencck-cidr.sh
-```
-
-Параметры: `--source-url`, `--input-path`, `--output-path`.
+Параметры запуска, выбор языка, прямой запуск исходников, структура проекта и тесты описаны в [расширенной инструкции](docs/guides/advanced-usage.md).
 
 ## Ограничения
 
 - Поддерживается только IPv4 CIDR (`data=cidr4`).
 - Для сетевой загрузки принимается только HTTPS-ссылка с домена `iplist.opencck.org`.
 - Работа сетевого режима зависит от доступности и формата ответа OpenCCK.
-- **После исправления импорта в официальном клиенте необходимость в конвертере может исчезнуть.**
-
-## Разработка
-
-### Тесты в Windows
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File .\tests\run-tests.ps1
-```
-
-### Тесты в macOS и Linux
-
-```bash
-chmod +x ./tests/run-tests.sh
-./tests/run-tests.sh
-```
-
-GitHub Actions выполняет нативные тесты отдельно в Windows, Ubuntu и macOS.
-
-Правила подготовки изменений находятся в [CONTRIBUTING.md](.github/CONTRIBUTING.md).
+- После исправления импорта в официальном клиенте необходимость в конвертере может исчезнуть.
 
 ## Обратная связь
 
