@@ -1,0 +1,17 @@
+# Normalize text files consistently across Windows, macOS and Linux.
+* text=auto
+
+*.sh text eol=lf
+*.ps1 text eol=lf
+*.cmd text eol=crlf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+
+# Binary files must never be line-ending-normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary

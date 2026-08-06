@@ -1,0 +1,14 @@
+[
+  {
+    "hostname": "route-000001.invalid",
+    "ip": "142.250.0.0/15"
+  },
+  {
+    "hostname": "route-000002.invalid",
+    "ip": "1.1.1.0/24"
+  },
+  {
+    "hostname": "route-000003.invalid",
+    "ip": "192.0.2.0/24"
+  }
+]

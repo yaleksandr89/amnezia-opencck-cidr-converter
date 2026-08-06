@@ -1,0 +1,20 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# The main script contains Cyrillic and supports Windows PowerShell 5.1.
+# Windows PowerShell 5.1 misreads UTF-8 source without BOM as an ANSI code page.
+[src/*.ps1]
+charset = utf-8-bom
+
+[*.{yml,yaml,json}]
+indent_size = 2
+
+[*.cmd]
+end_of_line = crlf

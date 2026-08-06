@@ -1,0 +1,97 @@
+name: Сообщить об ошибке
+description: Воспроизводимая проблема в работе конвертера
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за отчёт. Не публикуйте ключи, токены, адреса личных серверов и другие чувствительные данные.
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Операционная система
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Другая
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: Версия операционной системы
+      placeholder: Например, Windows 11 24H2 или Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Среда запуска
+      options:
+        - Windows PowerShell 5.1
+        - PowerShell 7
+        - Bash
+        - Другая
+    validations:
+      required: true
+
+  - type: input
+    id: runtime-version
+    attributes:
+      label: Версия среды запуска
+      description: Для PowerShell используйте `$PSVersionTable.PSVersion`, для Bash — `bash --version`.
+      placeholder: Например, 5.1, 7.6.3 или GNU bash 5.2
+    validations:
+      required: true
+
+  - type: input
+    id: project-version
+    attributes:
+      label: Версия конвертера
+      placeholder: Например, v0.1.0 или commit SHA
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      placeholder: Опишите минимальную последовательность действий.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидаемый результат
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Фактический результат
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Обезличенный вывод или логи
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Проверки
+      options:
+        - label: Я удалил из примеров чувствительные данные.
+          required: true
+        - label: Я проверил существующие Issues и не нашёл такой же проблемы.
+          required: true

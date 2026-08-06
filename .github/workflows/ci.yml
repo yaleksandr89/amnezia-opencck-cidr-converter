@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows / PowerShell
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Parse PowerShell files
+        shell: powershell
+        run: |
+          $files = @(
+              'src/convert-opencck-cidr.ps1',
+              'tests/run-tests.ps1'
+          )
+
+          foreach ($file in $files) {
+              $tokens = $null
+              $errors = $null
+
+              [System.Management.Automation.Language.Parser]::ParseFile(
+                  (Join-Path $PWD $file),
+                  [ref] $tokens,
+                  [ref] $errors
+              ) | Out-Null
+
+              if ($errors.Count -gt 0) {
+                  $errors | ForEach-Object { Write-Error "${file}: $($_.Message)" }
+                  exit 1
+              }
+          }
+
+      - name: Run Windows tests
+        shell: powershell
+        run: .\tests\run-tests.ps1
+
+      - name: Validate Windows launcher
+        shell: cmd
+        run: >-
+          bin\convert-opencck-cidr.cmd
+          -InputPath tests\fixtures\opencck-sample.json
+          -OutputPath "%RUNNER_TEMP%\launcher-result.json"
+
+  unix:
+    name: ${{ matrix.name }} / Bash
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu
+            os: ubuntu-latest
+          - name: macOS
+            os: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Bash syntax
+        shell: bash
+        run: |
+          bash -n ./src/convert-opencck-cidr.sh
+          bash -n ./bin/convert-opencck-cidr.sh
+          bash -n ./tests/run-tests.sh
+
+      - name: Run Unix tests
+        shell: bash
+        run: |
+          chmod +x ./src/convert-opencck-cidr.sh
+          chmod +x ./bin/convert-opencck-cidr.sh
+          chmod +x ./tests/run-tests.sh
+          ./tests/run-tests.sh

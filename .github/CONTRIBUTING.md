@@ -1,0 +1,65 @@
+# Участие в разработке
+
+Спасибо за интерес к проекту.
+
+## Перед началом
+
+- Для воспроизводимой ошибки создайте Issue.
+- Для вопроса по использованию откройте Discussion в категории Q&A.
+- Для крупного изменения сначала обсудите идею.
+
+## Реализации
+
+Проект содержит две нативные реализации одного поведения:
+
+- `src/convert-opencck-cidr.ps1` — Windows;
+- `src/convert-opencck-cidr.sh` — macOS и Linux.
+
+Изменение логики конвертации должно быть внесено в обе реализации либо явно обосновано как платформенное.
+
+## Ветки
+
+```text
+feature/add-cidr6-support
+fix/windows-path-handling
+docs/update-linux-guide
+```
+
+## Коммиты
+
+Рекомендуемый формат — Conventional Commits:
+
+```text
+feat: add local JSON input
+fix: preserve CIDR prefix during conversion
+docs: clarify platform requirements
+test: cover duplicate CIDR entries
+chore: update GitHub workflow
+```
+
+## Локальная проверка
+
+Windows:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
+  -File .\tests\run-tests.ps1
+```
+
+macOS и Linux:
+
+```bash
+./tests/run-tests.sh
+```
+
+## Pull Request
+
+В Pull Request опишите:
+
+- какую проблему решает изменение;
+- как проверить результат;
+- какие платформы затронуты;
+- синхронизированы ли обе реализации;
+- требуется ли обновление документации.
+
+Не добавляйте в репозиторий приватные конфигурации, ключи, токены, адреса личных серверов и сгенерированные списки маршрутов.

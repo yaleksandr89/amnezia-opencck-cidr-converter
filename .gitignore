@@ -1,0 +1,33 @@
+# Generated converter output
+/amnezia-opencck-cidr.json
+/ip-list-amnezia*.json
+/routes.json
+
+# Test and temporary output
+/test-results/
+*.tmp
+*.log
+
+# Release archives
+*.zip
+
+# JetBrains IDEs (PhpStorm, IntelliJ IDEA, Rider, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.fleet/
+
+# Visual Studio Code
+.vscode/
+
+# Operating system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# PowerShell local data
+*.clixml
