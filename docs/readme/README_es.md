@@ -99,12 +99,6 @@ Los parámetros, la selección de idioma, la ejecución directa de los fuentes, 
 - El modo de red depende de la disponibilidad y del formato de respuesta de OpenCCK.
 - El convertidor puede dejar de ser necesario cuando se corrija el problema en el cliente oficial.
 
-## Documentación
-
-- [Uso avanzado](../guides/advanced-usage_es.md)
-- [Contribuir](../contributing/CONTRIBUTING_es.md)
-- [Seguridad](../security/SECURITY_es.md)
-
 ## Comentarios
 
 - errores reproducibles — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues);

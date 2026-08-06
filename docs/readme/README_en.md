@@ -99,12 +99,6 @@ Parameters, language selection, direct source execution, project structure, and 
 - Network mode depends on OpenCCK availability and response format.
 - The converter may no longer be needed after the import issue is fixed in the official client.
 
-## Documentation
-
-- [Advanced usage](../guides/advanced-usage_en.md)
-- [Contributing](../contributing/CONTRIBUTING_en.md)
-- [Security](../security/SECURITY_en.md)
-
 ## Feedback
 
 - reproducible bugs — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues);

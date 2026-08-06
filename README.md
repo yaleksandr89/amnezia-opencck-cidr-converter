@@ -99,12 +99,6 @@ chmod +x ./bin/convert-opencck-cidr.sh
 - Работа сетевого режима зависит от доступности и формата ответа OpenCCK.
 - После исправления импорта в официальном клиенте необходимость в конвертере может исчезнуть.
 
-## Документация
-
-- [Расширенное использование](docs/guides/advanced-usage.md)
-- [Участие в разработке](.github/CONTRIBUTING.md)
-- [Безопасность](.github/SECURITY.md)
-
 ## Обратная связь
 
 - воспроизводимые ошибки — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues);

@@ -99,12 +99,6 @@ Les paramètres, le choix de la langue, le lancement direct des sources, la stru
 - Le mode réseau dépend de la disponibilité et du format de réponse d’OpenCCK.
 - Le convertisseur peut devenir inutile lorsque le problème sera corrigé dans le client officiel.
 
-## Documentation
-
-- [Utilisation avancée](../guides/advanced-usage_fr.md)
-- [Contribution](../contributing/CONTRIBUTING_fr.md)
-- [Sécurité](../security/SECURITY_fr.md)
-
 ## Retours
 
 - erreurs reproductibles — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues) ;

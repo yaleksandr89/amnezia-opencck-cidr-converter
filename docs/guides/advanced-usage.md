@@ -117,33 +117,19 @@ bash ./src/convert-opencck-cidr.sh --language ru
 
 ```text
 .
-├── bin/
-│   ├── convert-opencck-cidr.cmd
-│   └── convert-opencck-cidr.sh
-├── src/
-│   ├── convert-opencck-cidr.ps1
-│   └── convert-opencck-cidr.sh
-├── tests/
-│   ├── fixtures/
-│   │   ├── expected-output.json
-│   │   └── opencck-sample.json
-│   ├── run-tests.ps1
-│   └── run-tests.sh
+├── bin/                     # точки запуска
+│   ├── convert-opencck-cidr.cmd    # Windows
+│   └── convert-opencck-cidr.sh     # macOS и Linux
+├── src/                     # основная логика конвертера
+│   ├── convert-opencck-cidr.ps1    # реализация для Windows
+│   └── convert-opencck-cidr.sh     # реализация для macOS и Linux
+├── tests/                   # автоматические тесты и тестовые данные
 ├── docs/
-│   ├── contributing/
-│   ├── guides/
-│   ├── readme/
-│   └── security/
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   ├── workflows/
-│   ├── CONTRIBUTING.md
-│   ├── FUNDING.yml
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── SECURITY.md
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
+│   ├── readme/              # переводы README
+│   ├── guides/              # расширенные инструкции
+│   ├── contributing/        # переводы правил участия
+│   └── security/            # переводы политики безопасности
+├── .github/                 # CI, шаблоны Issues и Pull Request
 ├── LICENSE
 └── README.md
 ```

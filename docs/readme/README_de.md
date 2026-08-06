@@ -99,12 +99,6 @@ Parameter, Sprachauswahl, direkter Start der Quelldateien, Projektstruktur und T
 - Der Netzwerkmodus hängt von der Verfügbarkeit und dem Antwortformat von OpenCCK ab.
 - Nach einer Korrektur im offiziellen Client wird der Konverter möglicherweise nicht mehr benötigt.
 
-## Dokumentation
-
-- [Erweiterte Verwendung](../guides/advanced-usage_de.md)
-- [Mitwirken](../contributing/CONTRIBUTING_de.md)
-- [Sicherheit](../security/SECURITY_de.md)
-
 ## Rückmeldung
 
 - reproduzierbare Fehler — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues);

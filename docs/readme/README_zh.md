@@ -99,12 +99,6 @@ chmod +x ./bin/convert-opencck-cidr.sh
 - 网络模式依赖 OpenCCK 的可用性和响应格式。
 - 官方客户端修复导入问题后，可能不再需要本转换器。
 
-## 文档
-
-- [高级使用](../guides/advanced-usage_zh.md)
-- [参与开发](../contributing/CONTRIBUTING_zh.md)
-- [安全说明](../security/SECURITY_zh.md)
-
 ## 反馈
 
 - 可复现的错误 — [GitHub Issues](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/issues)；
