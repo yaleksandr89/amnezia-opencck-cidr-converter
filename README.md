@@ -3,6 +3,14 @@
 [![CI](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
+<p align="center">
+  <img
+    src="docs/assets/readme-cover.png"
+    alt="Amnezia OpenCCK CIDR Converter — OpenCCK IPv4 CIDR to JSON converter for AmneziaVPN 5.x"
+    width="100%"
+  >
+</p>
+
 ## Выберите язык
 
 | Русский | English | Español | 中文 | Français | Deutsch |
