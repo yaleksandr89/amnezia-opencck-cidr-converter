@@ -156,7 +156,11 @@ function Resolve-OutputPath {
         return [System.IO.Path]::GetFullPath($Value)
     }
 
-    return [System.IO.Path]::GetFullPath((Join-Path -Path (Get-Location).Path -ChildPath $Value))
+    $currentDirectory = (Get-Location).ProviderPath
+
+    return [System.IO.Path]::GetFullPath(
+        (Join-Path -Path $currentDirectory -ChildPath $Value)
+    )
 }
 
 function Read-OpenCckUrl {
@@ -287,7 +291,7 @@ function Read-SourceItems {
     )
 
     if (-not [string]::IsNullOrWhiteSpace($Path)) {
-        $resolvedInputPath = (Resolve-Path -LiteralPath $Path).Path
+        $resolvedInputPath = (Resolve-Path -LiteralPath $Path).ProviderPath
         Write-Host (Get-Message 'ReadFile' @($resolvedInputPath))
 
         $rawJson = [System.IO.File]::ReadAllText($resolvedInputPath)

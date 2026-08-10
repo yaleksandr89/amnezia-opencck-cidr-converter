@@ -28,6 +28,8 @@ $fixture = Join-Path $PSScriptRoot 'fixtures/opencck-sample.json'
 $tempDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('amnezia-opencck-tests-' + [Guid]::NewGuid().ToString('N'))
 $output = Join-Path $tempDirectory 'result.json'
 $russianOutput = Join-Path $tempDirectory 'result-ru.json'
+$relativeOutputName = 'relative-result-' + [Guid]::NewGuid().ToString('N') + '.json'
+$relativeOutput = Join-Path (Get-Location).ProviderPath $relativeOutputName
 
 try {
     New-Item -ItemType Directory -Path $tempDirectory -Force | Out-Null
@@ -58,6 +60,21 @@ try {
         throw 'Output JSON must be UTF-8 without BOM.'
     }
 
+    & $converter `
+    -InputPath $fixture `
+    -OutputPath $relativeOutputName `
+    -Language en
+
+    if (-not (Test-Path -LiteralPath $relativeOutput)) {
+        throw 'Converter did not create the output file from a relative output path.'
+    }
+
+    Assert-Equal (
+    [System.IO.File]::ReadAllText($output)
+    ) (
+    [System.IO.File]::ReadAllText($relativeOutput)
+    ) 'Relative output path produced different JSON.'
+
     & $converter -InputPath $fixture -OutputPath $russianOutput -Language ru
 
     if (-not (Test-Path -LiteralPath $russianOutput)) {
@@ -73,6 +90,10 @@ try {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
 finally {
+    if (Test-Path -LiteralPath $relativeOutput) {
+        Remove-Item -LiteralPath $relativeOutput -Force
+    }
+
     if (Test-Path -LiteralPath $tempDirectory) {
         Remove-Item -LiteralPath $tempDirectory -Recurse -Force
     }
