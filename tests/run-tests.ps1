@@ -28,6 +28,8 @@ $fixture = Join-Path $PSScriptRoot 'fixtures/opencck-sample.json'
 $tempDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('amnezia-opencck-tests-' + [Guid]::NewGuid().ToString('N'))
 $output = Join-Path $tempDirectory 'result.json'
 $russianOutput = Join-Path $tempDirectory 'result-ru.json'
+$passThruOutput = Join-Path $tempDirectory 'result-pass-thru.json'
+$passThruErrorOutput = Join-Path $tempDirectory 'result-pass-thru-error.json'
 $relativeOutputName = 'relative-result-' + [Guid]::NewGuid().ToString('N') + '.json'
 $relativeOutput = Join-Path (Get-Location).ProviderPath $relativeOutputName
 
@@ -74,6 +76,35 @@ try {
     ) (
     [System.IO.File]::ReadAllText($relativeOutput)
     ) 'Relative output path produced different JSON.'
+
+    $passThruResult = & $converter `
+    -InputPath $fixture `
+    -OutputPath $passThruOutput `
+    -Language en `
+    -PassThru
+
+    Assert-Equal $true $passThruResult.Success 'PassThru success flag is incorrect.'
+    Assert-Equal 3 $passThruResult.RouteCount 'PassThru route count is incorrect.'
+    Assert-Equal $passThruOutput $passThruResult.OutputPath 'PassThru output path is incorrect.'
+
+    if ($null -ne $passThruResult.ErrorMessage) {
+        throw 'PassThru success result contains an error message.'
+    }
+
+    $passThruErrorResult = & $converter `
+    -SourceUrl 'https://example.com/not-opencck' `
+    -OutputPath $passThruErrorOutput `
+    -Language en `
+    -PassThru
+
+    Assert-Equal $false $passThruErrorResult.Success 'PassThru error flag is incorrect.'
+    Assert-Equal 0 $passThruErrorResult.RouteCount 'PassThru error route count is incorrect.'
+    Assert-Equal $passThruErrorOutput $passThruErrorResult.OutputPath 'PassThru error output path is incorrect.'
+    Assert-Equal 'Expected a URL from iplist.opencck.org' $passThruErrorResult.ErrorMessage 'PassThru error message is incorrect.'
+
+    if (Test-Path -LiteralPath $passThruErrorOutput) {
+        throw 'PassThru failed conversion unexpectedly created an output file.'
+    }
 
     & $converter -InputPath $fixture -OutputPath $russianOutput -Language ru
 

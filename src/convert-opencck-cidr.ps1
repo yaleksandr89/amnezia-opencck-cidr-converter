@@ -28,7 +28,10 @@ param(
 
     [Parameter()]
     [ValidateSet('auto', 'ru', 'en')]
-    [string]$Language = 'auto'
+    [string]$Language = 'auto',
+
+    [Parameter()]
+    [switch]$PassThru
 )
 
 $ErrorActionPreference = 'Stop'
@@ -404,6 +407,15 @@ try {
     $result = Convert-OpenCckItems -Items $sourceItems
     Write-ResultJson -Items $result -Path $OutputPath
 
+    if ($PassThru) {
+        return [PSCustomObject]@{
+            Success      = $true
+            RouteCount   = $result.Count
+            OutputPath   = $OutputPath
+            ErrorMessage = $null
+        }
+    }
+
     Write-Host ''
     Write-Host (Get-Message 'Done') -ForegroundColor Green
     Write-Host (Get-Message 'RouteCount' @($result.Count))
@@ -412,6 +424,15 @@ try {
     Write-Host (Get-Message 'Import')
 }
 catch {
+    if ($PassThru) {
+        return [PSCustomObject]@{
+            Success      = $false
+            RouteCount   = 0
+            OutputPath   = $OutputPath
+            ErrorMessage = $_.Exception.Message
+        }
+    }
+
     Write-Host ''
     Write-Host (Get-Message 'Error' @($_.Exception.Message)) -ForegroundColor Red
     exit 1
