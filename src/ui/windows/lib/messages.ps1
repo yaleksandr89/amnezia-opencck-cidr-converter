@@ -46,6 +46,11 @@ $UiMessages = @{
         EditInputFile        = 'Edit input file'
         ChangeOutput         = 'Change output directory'
 
+        DependencyFailed    = 'Cannot start TUI.'
+        GumMissing          = 'gum was not found in PATH.'
+        GumMissingHint      = 'Install gum or add gum.exe to PATH, then run the TUI again.'
+        CoreMissing         = 'Core converter was not found:'
+
         Bye                  = 'Bye!'
     }
 
@@ -93,6 +98,11 @@ $UiMessages = @{
         EditUrl              = 'Изменить ссылку'
         EditInputFile        = 'Изменить исходный файл'
         ChangeOutput         = 'Изменить папку сохранения'
+
+        DependencyFailed    = 'Не удалось запустить TUI.'
+        GumMissing          = 'gum не найден в PATH.'
+        GumMissingHint      = 'Установите gum или добавьте gum.exe в PATH, затем запустите TUI снова.'
+        CoreMissing         = 'Не найден основной конвертер:'
 
         Bye                  = 'До свидания!'
     }

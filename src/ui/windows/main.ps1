@@ -9,6 +9,7 @@ $OutputEncoding = $utf8
 $libDirectory = Join-Path $PSScriptRoot 'lib'
 
 . (Join-Path $libDirectory 'messages.ps1')
+. (Join-Path $libDirectory 'dependencies.ps1')
 . (Join-Path $libDirectory 'input.ps1')
 . (Join-Path $libDirectory 'menus.ps1')
 . (Join-Path $libDirectory 'conversion.ps1')
@@ -16,6 +17,11 @@ $libDirectory = Join-Path $PSScriptRoot 'lib'
 $corePath = Join-Path `
     $PSScriptRoot `
     '..\..\convert-opencck-cidr.ps1'
+
+if (-not (Test-UiDependencies -CorePath $corePath))
+{
+    return
+}
 
 $ConverterPath = (Resolve-Path -LiteralPath $corePath).ProviderPath
 
