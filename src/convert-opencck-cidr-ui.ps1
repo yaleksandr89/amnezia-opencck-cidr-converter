@@ -207,7 +207,191 @@ $OutputEncoding = $utf8
 
         "Convert local JSON" {
             Write-Host ""
-            Write-Host "Local JSON mode selected"
+
+            $inputPath = gum input `
+            --placeholder "C:\path\opencck.json"
+
+            :localOutputStep while ($true)
+            {
+                $outputChoice = gum choose `
+                --header "Where should the result be saved?" `
+                "Use default path" `
+                "Enter another directory"
+
+                switch ($outputChoice)
+                {
+                    "Use default path" {
+                        $outputDirectory = (Get-Location).ProviderPath
+                    }
+
+                    "Enter another directory" {
+                        while ($true)
+                        {
+                            $outputDirectory = gum input `
+                            --placeholder "C:\Test"
+
+                            $outputDirectory = $outputDirectory.Trim()
+
+                            if ([string]::IsNullOrWhiteSpace($outputDirectory))
+                            {
+                                Write-Host ""
+                                Write-Host "Directory cannot be empty." -ForegroundColor Yellow
+                                continue
+                            }
+
+                            if (-not [System.IO.Path]::IsPathRooted($outputDirectory))
+                            {
+                                Write-Host ""
+                                Write-Host "Please enter an absolute path, for example C:\Test" -ForegroundColor Yellow
+                                continue
+                            }
+
+                            break
+                        }
+                    }
+                }
+
+                $outputPath = Join-Path `
+            $outputDirectory `
+            "amnezia-opencck-cidr.json"
+
+                $summary = @(
+                    "Source file:"
+                    $inputPath
+                    ""
+                    "Output:"
+                    $outputPath
+                ) -join [Environment]::NewLine
+
+                Write-Host ""
+                Write-Host $summary
+
+                $confirmation = gum choose `
+                --header "Please check the parameters" `
+                "Run" `
+                "Back" `
+                "Cancel"
+
+                switch ($confirmation)
+                {
+                    "Run" {
+                        $converterPath = Join-Path `
+                    $PSScriptRoot `
+                    "convert-opencck-cidr.ps1"
+
+                        :localConversionAttempt while ($true)
+                        {
+                            $result = & $converterPath `
+                            -InputPath $inputPath `
+                            -OutputPath $outputPath `
+                            -Language en `
+                            -PassThru `
+                            3>$null `
+                            6>$null
+
+                            Write-Host ""
+
+                            if ($result.Success)
+                            {
+                                Write-Host "Conversion completed successfully" -ForegroundColor Green
+                                Write-Host ""
+                                Write-Host "Routes: $($result.RouteCount)"
+                                Write-Host "File: $($result.OutputPath)"
+                                Write-Host ""
+
+                                :localSuccessMenu while ($true)
+                                {
+                                    $successAction = gum choose `
+                                    --header "What next?" `
+                                    "Open output directory" `
+                                    "Convert another list" `
+                                    "Exit"
+
+                                    switch ($successAction)
+                                    {
+                                        "Open output directory" {
+                                            Start-Process explorer.exe -ArgumentList $outputDirectory
+                                            continue localSuccessMenu
+                                        }
+
+                                        "Convert another list" {
+                                            continue mainMenu
+                                        }
+
+                                        "Exit" {
+                                            return
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Write-Host "Conversion failed" -ForegroundColor Red
+                                Write-Host ""
+                                Write-Host $result.ErrorMessage
+                                Write-Host ""
+
+                                :localErrorMenu while ($true)
+                                {
+                                    $errorAction = gum choose `
+                                    --header "What next?" `
+                                    "Change parameters" `
+                                    "Main menu" `
+                                    "Exit"
+
+                                    switch ($errorAction)
+                                    {
+                                        "Change parameters" {
+                                            $parameterAction = gum choose `
+                                            --header "What do you want to change?" `
+                                            "Edit input file" `
+                                            "Change output directory" `
+                                            "Back"
+
+                                            switch ($parameterAction)
+                                            {
+                                                "Edit input file" {
+                                                    $inputPath = gum input `
+                                                    --value $inputPath `
+                                                    --placeholder "C:\path\opencck.json"
+
+                                                    continue localConversionAttempt
+                                                }
+
+                                                "Change output directory" {
+                                                    continue localOutputStep
+                                                }
+
+                                                "Back" {
+                                                    continue localErrorMenu
+                                                }
+                                            }
+                                        }
+
+                                        "Main menu" {
+                                            continue mainMenu
+                                        }
+
+                                        "Exit" {
+                                            return
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    "Back" {
+                        continue localOutputStep
+                    }
+
+                    "Cancel" {
+                        Write-Host ""
+                        Write-Host "Cancelled."
+                        continue mainMenu
+                    }
+                }
+            }
         }
 
         "Change language" {
