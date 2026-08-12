@@ -85,10 +85,26 @@ switch ($action)
                     $PSScriptRoot `
                     "convert-opencck-cidr.ps1"
 
-                    & $converterPath `
+                    $result = & $converterPath `
                     -SourceUrl $url `
                     -OutputPath $outputPath `
-                    -Language en
+                    -Language en `
+                    -PassThru `
+                    3>$null `
+                    6>$null
+
+                    Write-Host ""
+
+                    if ($result.Success) {
+                        Write-Host "Conversion completed successfully" -ForegroundColor Green
+                        Write-Host ""
+                        Write-Host "Routes: $($result.RouteCount)"
+                        Write-Host "File: $($result.OutputPath)"
+                    } else {
+                        Write-Host "Conversion failed" -ForegroundColor Red
+                        Write-Host ""
+                        Write-Host $result.ErrorMessage
+                    }
 
                     break outputStep
                 }
