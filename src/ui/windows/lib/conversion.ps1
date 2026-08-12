@@ -56,25 +56,27 @@ function Invoke-ConversionFlow
 
         :conversionAttempt while ($true)
         {
+            $language = Get-UiLanguage
+
             if ($Mode -eq 'Url')
             {
                 $result = & $ConverterPath `
-                    -SourceUrl $source `
-                    -OutputPath $outputPath `
-                    -Language en `
-                    -PassThru `
-                    3>$null `
-                    6>$null
+                -SourceUrl $source `
+                -OutputPath $outputPath `
+                -Language $language `
+                -PassThru `
+                3>$null `
+                6>$null
             }
             else
             {
                 $result = & $ConverterPath `
-                    -InputPath $source `
-                    -OutputPath $outputPath `
-                    -Language en `
-                    -PassThru `
-                    3>$null `
-                    6>$null
+                -InputPath $source `
+                -OutputPath $outputPath `
+                -Language $language `
+                -PassThru `
+                3>$null `
+                6>$null
             }
 
             Write-Host ""

@@ -103,3 +103,27 @@ function Show-ErrorMenu
         }
     }
 }
+
+function Show-LanguageMenu
+{
+    $choice = gum choose `
+        --header (Get-UiText 'ChooseLanguage') `
+        'English' `
+        'Русский' `
+        (Get-UiText 'Back')
+
+    switch ($choice)
+    {
+        'English' {
+            return 'en'
+        }
+
+        'Русский' {
+            return 'ru'
+        }
+
+        default {
+            return 'Back'
+        }
+    }
+}

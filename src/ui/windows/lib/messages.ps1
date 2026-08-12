@@ -1,4 +1,4 @@
-$UiLanguage = 'en'
+$script:UiLanguage = 'en'
 
 $UiMessages = @{
     en = @{
@@ -6,6 +6,8 @@ $UiMessages = @{
         MainConvertFile      = 'Convert local JSON'
         MainLanguage         = 'Change language'
         MainExit             = 'Exit'
+
+        ChooseLanguage       = 'Choose language'
 
         UrlPlaceholder       = 'https://iplist.opencck.org/...'
         FilePlaceholder      = 'C:\path\opencck.json'
@@ -44,8 +46,55 @@ $UiMessages = @{
         EditInputFile        = 'Edit input file'
         ChangeOutput         = 'Change output directory'
 
-        LanguageStub         = 'Language selection will be here'
         Bye                  = 'Bye!'
+    }
+
+    ru = @{
+        MainConvertUrl       = 'Конвертировать из ссылки OpenCCK'
+        MainConvertFile      = 'Конвертировать локальный JSON'
+        MainLanguage         = 'Сменить язык'
+        MainExit             = 'Выход'
+
+        ChooseLanguage       = 'Выберите язык'
+
+        UrlPlaceholder       = 'https://iplist.opencck.org/...'
+        FilePlaceholder      = 'C:\путь\opencck.json'
+        DirectoryPlaceholder = 'C:\Test'
+
+        OutputQuestion       = 'Куда сохранить результат?'
+        OutputDefault        = 'Использовать путь по умолчанию'
+        OutputAnother        = 'Указать другую папку'
+
+        DirectoryEmpty       = 'Путь к папке не может быть пустым.'
+        DirectoryAbsolute    = 'Укажите абсолютный путь, например C:\Test'
+
+        SourceUrl            = 'Источник:'
+        SourceFile           = 'Исходный файл:'
+        Output               = 'Результат:'
+
+        CheckParameters      = 'Проверьте параметры'
+        Run                  = 'Запустить'
+        Back                 = 'Назад'
+        Cancel               = 'Отмена'
+        Cancelled            = 'Отменено.'
+
+        Success              = 'Конвертация успешно завершена'
+        Failed               = 'Ошибка конвертации'
+        Routes               = 'Маршрутов'
+        File                 = 'Файл'
+
+        WhatNext             = 'Что дальше?'
+        OpenOutputDirectory  = 'Открыть папку с результатом'
+        ConvertAnother       = 'Конвертировать другой список'
+
+        ChangeParameters     = 'Изменить параметры'
+        MainMenu             = 'Главное меню'
+        WhatChange           = 'Что изменить?'
+        EditUrl              = 'Изменить ссылку'
+        EditInputFile        = 'Изменить исходный файл'
+        ChangeOutput         = 'Изменить папку сохранения'
+
+        Bye                  = 'До свидания!'
     }
 }
 
@@ -56,5 +105,21 @@ function Get-UiText
         [string]$Key
     )
 
-    return $UiMessages[$UiLanguage][$Key]
+    return $UiMessages[$script:UiLanguage][$Key]
+}
+
+function Get-UiLanguage
+{
+    return $script:UiLanguage
+}
+
+function Set-UiLanguage
+{
+    param(
+        [Parameter(Mandatory)]
+        [ValidateSet('en', 'ru')]
+        [string]$Language
+    )
+
+    $script:UiLanguage = $Language
 }

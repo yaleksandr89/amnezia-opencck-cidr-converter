@@ -44,8 +44,14 @@ $ConverterPath = (Resolve-Path -LiteralPath $corePath).ProviderPath
         }
 
         'Language' {
-            Write-Host ""
-            Write-Host (Get-UiText 'LanguageStub')
+            $language = Show-LanguageMenu
+
+            if ($language -ne 'Back')
+            {
+                Set-UiLanguage -Language $language
+            }
+
+            continue mainMenu
         }
 
         'Exit' {
