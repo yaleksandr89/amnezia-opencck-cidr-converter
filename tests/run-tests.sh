@@ -25,6 +25,25 @@ bash "$CONVERTER" \
 cmp -s "$EXPECTED" "$TEMP_DIR/source-result.json" \
     || { diff -u "$EXPECTED" "$TEMP_DIR/source-result.json"; exit 1; }
 
+MACHINE_OUTPUT=$(bash "$CONVERTER" \
+    --input-path "$FIXTURE" \
+    --output-path "$TEMP_DIR/machine-result.json" \
+    --language en \
+    --machine-readable \
+    2>"$TEMP_DIR/machine-stderr.txt")
+
+EXPECTED_MACHINE_OUTPUT=$(printf \
+    'status=success\nroute_count=3\noutput_path=%s' \
+    "$TEMP_DIR/machine-result.json")
+
+[ "$MACHINE_OUTPUT" = "$EXPECTED_MACHINE_OUTPUT" ] || {
+    printf 'Unexpected machine-readable result:\n%s\n' "$MACHINE_OUTPUT" >&2
+    exit 1
+}
+
+cmp -s "$EXPECTED" "$TEMP_DIR/machine-result.json" \
+    || { diff -u "$EXPECTED" "$TEMP_DIR/machine-result.json"; exit 1; }
+
 bash "$LAUNCHER" \
     --input-path "$FIXTURE" \
     --output-path "$TEMP_DIR/launcher-result.json" \

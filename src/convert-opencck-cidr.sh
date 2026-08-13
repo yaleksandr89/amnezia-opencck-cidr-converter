@@ -12,6 +12,7 @@ OUTPUT_PATH=""
 TEMP_INPUT=""
 TEMP_COUNT=""
 LANGUAGE="auto"
+MACHINE_READABLE=0
 
 detect_language() {
     local locale_value
@@ -145,26 +146,28 @@ usage() {
     if [ "$LANGUAGE" = "ru" ]; then
         printf '%s\n' \
             'Использование:' \
-            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG]' \
-            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG]' \
+            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG] [--machine-readable]' \
             '' \
             'Параметры:' \
             '  --source-url, -u   Ссылка OpenCCK' \
             '  --input-path, -i   Локальный JSON в формате OpenCCK' \
             '  --output-path, -o  Путь к результирующему JSON' \
             '  --language, -l     Язык интерфейса: auto, ru или en' \
+            '  --machine-readable Машинный формат результата для TUI' \
             '  --help, -h         Показать справку'
     else
         printf '%s\n' \
             'Usage:' \
-            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG]' \
-            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG]' \
+            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG] [--machine-readable]' \
             '' \
             'Options:' \
             '  --source-url, -u   OpenCCK URL' \
             '  --input-path, -i   Local JSON in OpenCCK format' \
             '  --output-path, -o  Output JSON path' \
             '  --language, -l     Interface language: auto, ru, or en' \
+            '  --machine-readable Machine-readable result for TUI' \
             '  --help, -h         Show help'
     fi
 }
@@ -190,6 +193,10 @@ while [ "$#" -gt 0 ]; do
             [ "$#" -ge 2 ] || fail "$(message missing_value "$1")"
             set_language "$2"
             shift 2
+            ;;
+        --machine-readable)
+            MACHINE_READABLE=1
+            shift
             ;;
         --help|-h)
             usage
@@ -304,12 +311,19 @@ fi
 
 if [ -n "$SOURCE_URL" ]; then
     normalize_and_validate_url "$SOURCE_URL"
-    message downloading
+
+    if [ "$MACHINE_READABLE" -eq 0 ]; then
+        message downloading
+    fi
+
     download_source
 else
     [ -f "$INPUT_PATH" ] || fail "$(message file_missing "$INPUT_PATH")"
     [ -s "$INPUT_PATH" ] || fail "$(message file_empty)"
-    message reading_file "$INPUT_PATH"
+
+    if [ "$MACHINE_READABLE" -eq 0 ]; then
+        message reading_file "$INPUT_PATH"
+    fi
 fi
 
 OUTPUT_DIR=$(dirname -- "$OUTPUT_PATH")
@@ -335,7 +349,13 @@ ROUTE_COUNT=$(cat "$TEMP_COUNT")
 ABS_OUTPUT_DIR=$(CDPATH= cd -- "$(dirname -- "$OUTPUT_PATH")" && pwd)
 ABS_OUTPUT="$ABS_OUTPUT_DIR/$(basename -- "$OUTPUT_PATH")"
 
-printf '\n%s\n' "$(message done)"
-printf '%s\n' "$(message route_count "$ROUTE_COUNT")"
-printf '%s\n\n' "$(message output_file "$ABS_OUTPUT")"
-printf '%s\n' "$(message import_result)"
+if [ "$MACHINE_READABLE" -eq 1 ]; then
+    printf 'status=success\n'
+    printf 'route_count=%s\n' "$ROUTE_COUNT"
+    printf 'output_path=%s\n' "$ABS_OUTPUT"
+else
+    printf '\n%s\n' "$(message done)"
+    printf '%s\n' "$(message route_count "$ROUTE_COUNT")"
+    printf '%s\n\n' "$(message output_file "$ABS_OUTPUT")"
+    printf '%s\n' "$(message import_result)"
+fi
