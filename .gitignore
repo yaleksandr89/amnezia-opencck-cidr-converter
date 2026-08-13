@@ -37,3 +37,4 @@ Desktop.ini
 
 # Build dependency cache
 /build/windows/cache/
+/build/unix/cache/

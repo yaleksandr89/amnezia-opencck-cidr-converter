@@ -7,6 +7,8 @@ CONVERTER="$PROJECT_ROOT/src/convert-opencck-cidr.sh"
 LAUNCHER="$PROJECT_ROOT/bin/convert-opencck-cidr.sh"
 TUI_LAUNCHER="$PROJECT_ROOT/src/convert-opencck-cidr-ui.sh"
 TUI_MAIN="$PROJECT_ROOT/src/ui/unix/main.sh"
+UNIX_BUILD="$PROJECT_ROOT/build/unix/build.sh"
+UNIX_LAUNCHER_TEMPLATE="$PROJECT_ROOT/build/unix/launcher.sh"
 FIXTURE="$SCRIPT_DIR/fixtures/opencck-sample.json"
 EXPECTED="$SCRIPT_DIR/fixtures/expected-output.json"
 TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/amnezia-opencck-tests.XXXXXX")
@@ -21,6 +23,8 @@ bash -n "$CONVERTER"
 bash -n "$LAUNCHER"
 bash -n "$TUI_LAUNCHER"
 bash -n "$TUI_MAIN"
+bash -n "$UNIX_BUILD"
+bash -n "$UNIX_LAUNCHER_TEMPLATE"
 
 for TUI_LIB in "$PROJECT_ROOT"/src/ui/unix/lib/*.sh; do
     bash -n "$TUI_LIB"

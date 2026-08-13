@@ -54,6 +54,17 @@ jobs:
           -InputPath tests\fixtures\opencck-sample.json
           -OutputPath "%RUNNER_TEMP%\launcher-result.json"
 
+      - name: Build Windows standalone package
+        shell: powershell
+        run: .\build\windows\build.ps1
+
+      - name: Upload Windows standalone package
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-windows-x64
+          path: dist/amnezia-opencck-cidr-converter_windows_x64.zip
+          if-no-files-found: error
+
   unix:
     name: ${{ matrix.name }} / Bash
     runs-on: ${{ matrix.os }}
@@ -64,8 +75,10 @@ jobs:
         include:
           - name: Ubuntu
             os: ubuntu-latest
+            artifact: linux-x64
           - name: macOS
             os: macos-latest
+            artifact: macos-arm64
 
     steps:
       - name: Checkout
@@ -85,3 +98,17 @@ jobs:
           chmod +x ./bin/convert-opencck-cidr.sh
           chmod +x ./tests/run-tests.sh
           ./tests/run-tests.sh
+
+      - name: Build Unix standalone package
+        shell: bash
+        run: |
+          chmod +x ./build/unix/build.sh
+          chmod +x ./build/unix/launcher.sh
+          ./build/unix/build.sh
+
+      - name: Upload Unix standalone package
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-${{ matrix.artifact }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
