@@ -53,15 +53,34 @@ OpenCCK может вернуть CIDR в поле `hostname`:
 
 ## Поддерживаемые системы
 
-| Система | Запуск | Требования |
+| Система | Готовый пакет | Архитектура |
 |---|---|---|
-| Windows 10/11 | `bin/convert-opencck-cidr.cmd` | Windows PowerShell 5.1 или PowerShell 7 |
-| macOS | `bin/convert-opencck-cidr.sh` | Bash и `curl` либо `wget` |
-| Linux | `bin/convert-opencck-cidr.sh` | Bash и `curl` либо `wget` |
+| Windows 10/11 | `amnezia-opencck-cidr-converter_windows_x64.zip` | x64 |
+| Linux | `amnezia-opencck-cidr-converter_linux_x64.tar.gz` | x64 |
+| macOS | `amnezia-opencck-cidr-converter_macos_arm64.tar.gz` | Apple Silicon / arm64 |
+
+Готовые пакеты публикуются в [GitHub Releases](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/releases).
+
+В каждый standalone-пакет уже включён `gum`, поэтому отдельно устанавливать его не нужно.
+
 
 ## Быстрый старт
 
-### 1. Подготовьте ссылку OpenCCK
+### 1. Скачайте готовый пакет
+
+Откройте [GitHub Releases](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/releases) и скачайте архив для своей системы.
+
+После распаковки запускайте:
+
+- Windows: `amnezia-opencck-cidr-converter.exe`;
+- Linux/macOS: `./amnezia-opencck-cidr-converter`.
+
+Интерактивный интерфейс позволяет выбрать источник, папку результата и язык, а после конвертации — открыть папку с готовым JSON.
+
+> [!NOTE]
+> Windows-сборка не подписана коммерческим сертификатом, поэтому SmartScreen может показать предупреждение «Неизвестный издатель».
+
+### 2. Подготовьте ссылку OpenCCK
 
 1. Откройте [iplist.opencck.org](https://iplist.opencck.org/).
 2. Выберите нужные сайты и сервисы.
@@ -70,33 +89,11 @@ OpenCCK может вернуть CIDR в поле `hostname`:
 5. Отключите пункт **«Сохранить как файл»**.
 6. Скопируйте длинную ссылку из нижнего поля страницы.
 
-### 2. Запустите конвертер
+### 3. Импортируйте результат
 
-#### Windows
+После завершения конвертации импортируйте созданный `amnezia-opencck-cidr.json` в приложение.
 
-Дважды щёлкните:
-
-```text
-bin/convert-opencck-cidr.cmd
-```
-
-#### macOS и Linux
-
-Разрешите запуск один раз:
-
-```bash
-chmod +x ./bin/convert-opencck-cidr.sh
-```
-
-Запустите:
-
-```bash
-./bin/convert-opencck-cidr.sh
-```
-
-Язык интерфейса определяется автоматически. Его можно указать вручную при параметризованном запуске.
-
-После завершения импортируйте созданный JSON в приложение.
+Запуск напрямую из исходников и CLI-режим по-прежнему поддерживаются.
 
 Параметры запуска, выбор языка, прямой запуск исходников, структура проекта и тесты описаны в [расширенной инструкции](docs/guides/advanced-usage.md).
 

@@ -53,15 +53,34 @@ During a problematic import, the subnet prefix may be lost. The converter create
 
 ## Supported systems
 
-| System | Launcher | Requirements |
+| System | Ready-to-use package | Architecture |
 |---|---|---|
-| Windows 10/11 | `bin/convert-opencck-cidr.cmd` | Windows PowerShell 5.1 or PowerShell 7 |
-| macOS | `bin/convert-opencck-cidr.sh` | Bash and either `curl` or `wget` |
-| Linux | `bin/convert-opencck-cidr.sh` | Bash and either `curl` or `wget` |
+| Windows 10/11 | `amnezia-opencck-cidr-converter_windows_x64.zip` | x64 |
+| Linux | `amnezia-opencck-cidr-converter_linux_x64.tar.gz` | x64 |
+| macOS | `amnezia-opencck-cidr-converter_macos_arm64.tar.gz` | Apple Silicon / arm64 |
+
+Ready-to-use packages are published in [GitHub Releases](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/releases).
+
+Each standalone package already includes `gum`, so users do not need to install it separately.
+
 
 ## Quick start
 
-### 1. Prepare the OpenCCK URL
+### 1. Download a ready-to-use package
+
+Open [GitHub Releases](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/releases) and download the archive for your system.
+
+After extracting it, run:
+
+- Windows: `amnezia-opencck-cidr-converter.exe`;
+- Linux/macOS: `./amnezia-opencck-cidr-converter`.
+
+The interactive interface lets you select the source, output directory, and language, then open the directory containing the generated JSON.
+
+> [!NOTE]
+> The Windows build is not signed with a commercial code-signing certificate, so SmartScreen may display an “Unknown publisher” warning.
+
+### 2. Prepare the OpenCCK URL
 
 1. Open [iplist.opencck.org](https://iplist.opencck.org/).
 2. Select the required sites and services.
@@ -70,33 +89,11 @@ During a problematic import, the subnet prefix may be lost. The converter create
 5. Disable **Save as file**.
 6. Copy the long URL from the field at the bottom of the page.
 
-### 2. Run the converter
+### 3. Import the result
 
-#### Windows
+After conversion, import the generated `amnezia-opencck-cidr.json` into the application.
 
-Double-click:
-
-```text
-bin/convert-opencck-cidr.cmd
-```
-
-#### macOS and Linux
-
-Allow execution once:
-
-```bash
-chmod +x ./bin/convert-opencck-cidr.sh
-```
-
-Run:
-
-```bash
-./bin/convert-opencck-cidr.sh
-```
-
-The interface language is detected automatically and can be overridden during parameterized execution.
-
-Import the generated JSON into the application after the converter finishes.
+Direct source execution and CLI mode remain supported.
 
 Parameters, language selection, direct source execution, project structure, and tests are described in the [advanced usage guide](../guides/advanced-usage_en.md).
 
