@@ -28,6 +28,10 @@ $fixture = Join-Path $PSScriptRoot 'fixtures/opencck-sample.json'
 $tempDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('amnezia-opencck-tests-' + [Guid]::NewGuid().ToString('N'))
 $output = Join-Path $tempDirectory 'result.json'
 $russianOutput = Join-Path $tempDirectory 'result-ru.json'
+$passThruOutput = Join-Path $tempDirectory 'result-pass-thru.json'
+$passThruErrorOutput = Join-Path $tempDirectory 'result-pass-thru-error.json'
+$relativeOutputName = 'relative-result-' + [Guid]::NewGuid().ToString('N') + '.json'
+$relativeOutput = Join-Path (Get-Location).ProviderPath $relativeOutputName
 
 try {
     New-Item -ItemType Directory -Path $tempDirectory -Force | Out-Null
@@ -58,6 +62,50 @@ try {
         throw 'Output JSON must be UTF-8 without BOM.'
     }
 
+    & $converter `
+    -InputPath $fixture `
+    -OutputPath $relativeOutputName `
+    -Language en
+
+    if (-not (Test-Path -LiteralPath $relativeOutput)) {
+        throw 'Converter did not create the output file from a relative output path.'
+    }
+
+    Assert-Equal (
+    [System.IO.File]::ReadAllText($output)
+    ) (
+    [System.IO.File]::ReadAllText($relativeOutput)
+    ) 'Relative output path produced different JSON.'
+
+    $passThruResult = & $converter `
+    -InputPath $fixture `
+    -OutputPath $passThruOutput `
+    -Language en `
+    -PassThru
+
+    Assert-Equal $true $passThruResult.Success 'PassThru success flag is incorrect.'
+    Assert-Equal 3 $passThruResult.RouteCount 'PassThru route count is incorrect.'
+    Assert-Equal $passThruOutput $passThruResult.OutputPath 'PassThru output path is incorrect.'
+
+    if ($null -ne $passThruResult.ErrorMessage) {
+        throw 'PassThru success result contains an error message.'
+    }
+
+    $passThruErrorResult = & $converter `
+    -SourceUrl 'https://example.com/not-opencck' `
+    -OutputPath $passThruErrorOutput `
+    -Language en `
+    -PassThru
+
+    Assert-Equal $false $passThruErrorResult.Success 'PassThru error flag is incorrect.'
+    Assert-Equal 0 $passThruErrorResult.RouteCount 'PassThru error route count is incorrect.'
+    Assert-Equal $passThruErrorOutput $passThruErrorResult.OutputPath 'PassThru error output path is incorrect.'
+    Assert-Equal 'Expected a URL from iplist.opencck.org' $passThruErrorResult.ErrorMessage 'PassThru error message is incorrect.'
+
+    if (Test-Path -LiteralPath $passThruErrorOutput) {
+        throw 'PassThru failed conversion unexpectedly created an output file.'
+    }
+
     & $converter -InputPath $fixture -OutputPath $russianOutput -Language ru
 
     if (-not (Test-Path -LiteralPath $russianOutput)) {
@@ -73,6 +121,10 @@ try {
     Write-Host 'All tests passed.' -ForegroundColor Green
 }
 finally {
+    if (Test-Path -LiteralPath $relativeOutput) {
+        Remove-Item -LiteralPath $relativeOutput -Force
+    }
+
     if (Test-Path -LiteralPath $tempDirectory) {
         Remove-Item -LiteralPath $tempDirectory -Recurse -Force
     }

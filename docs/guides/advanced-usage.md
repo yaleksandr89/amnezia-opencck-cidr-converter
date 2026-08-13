@@ -6,7 +6,38 @@
 |---|---|---|---|---|---|
 | **Выбран** | [English](./advanced-usage_en.md) | [Español](./advanced-usage_es.md) | [中文](./advanced-usage_zh.md) | [Français](./advanced-usage_fr.md) | [Deutsch](./advanced-usage_de.md) |
 
-В этой инструкции собраны параметры запуска, ручной выбор языка, прямой запуск исходников, структура проекта и команды для разработки.
+В этой инструкции собраны параметры запуска, интерактивный TUI, ручной выбор языка, прямой запуск исходников, структура проекта и команды для разработки.
+
+## Интерактивный TUI
+
+Готовые release-пакеты запускают интерактивный интерфейс автоматически.
+
+Из исходников:
+
+Windows:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass `
+  -File .\src\convert-opencck-cidr-ui.ps1
+```
+
+macOS и Linux:
+
+```bash
+bash ./src/convert-opencck-cidr-ui.sh
+```
+
+TUI поддерживает:
+
+- конвертацию по ссылке OpenCCK;
+- конвертацию локального JSON;
+- выбор папки результата;
+- переключение русского и английского языка;
+- повторную конвертацию без перезапуска;
+- открытие папки результата.
+
+`gum` требуется только при запуске Unix TUI напрямую из исходников. В standalone-пакетах он уже включён.
+
 
 ## Язык интерфейса
 
@@ -89,6 +120,7 @@ macOS и Linux:
 | `--input-path`, `-i` | Локальный JSON в формате OpenCCK |
 | `--output-path`, `-o` | Путь к результирующему JSON |
 | `--language`, `-l` | `auto`, `ru` или `en` |
+| `--machine-readable` | Машинный вывод для TUI и интеграций |
 | `--help`, `-h` | Справка |
 
 Если `OutputPath` не указан, результат сохраняется в корне проекта:
@@ -120,9 +152,16 @@ bash ./src/convert-opencck-cidr.sh --language ru
 ├── bin/                     # точки запуска
 │   ├── convert-opencck-cidr.cmd    # Windows
 │   └── convert-opencck-cidr.sh     # macOS и Linux
-├── src/                     # основная логика конвертера
-│   ├── convert-opencck-cidr.ps1    # реализация для Windows
-│   └── convert-opencck-cidr.sh     # реализация для macOS и Linux
+├── src/                     # core и TUI
+│   ├── convert-opencck-cidr.ps1    # Windows core
+│   ├── convert-opencck-cidr.sh     # Unix core
+│   ├── convert-opencck-cidr-ui.ps1 # Windows TUI launcher
+│   ├── convert-opencck-cidr-ui.sh  # Unix TUI launcher
+│   ├── lib/                         # AWK-логика Unix core
+│   └── ui/                          # компоненты Windows/Unix TUI
+├── build/
+│   ├── windows/             # standalone Windows package
+│   └── unix/                # standalone Linux/macOS packages
 ├── tests/                   # автоматические тесты и тестовые данные
 ├── docs/
 │   ├── readme/              # переводы README
@@ -150,6 +189,6 @@ chmod +x ./tests/run-tests.sh
 ./tests/run-tests.sh
 ```
 
-GitHub Actions запускает нативные тесты отдельно в Windows, Ubuntu и macOS.
+GitHub Actions запускает нативные тесты отдельно в Windows, Ubuntu и macOS и собирает standalone-пакеты для всех трёх платформ.
 
 Правила подготовки изменений находятся в [CONTRIBUTING.md](../../.github/CONTRIBUTING.md).

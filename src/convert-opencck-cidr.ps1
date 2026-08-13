@@ -28,7 +28,10 @@ param(
 
     [Parameter()]
     [ValidateSet('auto', 'ru', 'en')]
-    [string]$Language = 'auto'
+    [string]$Language = 'auto',
+
+    [Parameter()]
+    [switch]$PassThru
 )
 
 $ErrorActionPreference = 'Stop'
@@ -156,7 +159,11 @@ function Resolve-OutputPath {
         return [System.IO.Path]::GetFullPath($Value)
     }
 
-    return [System.IO.Path]::GetFullPath((Join-Path -Path (Get-Location).Path -ChildPath $Value))
+    $currentDirectory = (Get-Location).ProviderPath
+
+    return [System.IO.Path]::GetFullPath(
+        (Join-Path -Path $currentDirectory -ChildPath $Value)
+    )
 }
 
 function Read-OpenCckUrl {
@@ -287,7 +294,7 @@ function Read-SourceItems {
     )
 
     if (-not [string]::IsNullOrWhiteSpace($Path)) {
-        $resolvedInputPath = (Resolve-Path -LiteralPath $Path).Path
+        $resolvedInputPath = (Resolve-Path -LiteralPath $Path).ProviderPath
         Write-Host (Get-Message 'ReadFile' @($resolvedInputPath))
 
         $rawJson = [System.IO.File]::ReadAllText($resolvedInputPath)
@@ -400,6 +407,15 @@ try {
     $result = Convert-OpenCckItems -Items $sourceItems
     Write-ResultJson -Items $result -Path $OutputPath
 
+    if ($PassThru) {
+        return [PSCustomObject]@{
+            Success      = $true
+            RouteCount   = $result.Count
+            OutputPath   = $OutputPath
+            ErrorMessage = $null
+        }
+    }
+
     Write-Host ''
     Write-Host (Get-Message 'Done') -ForegroundColor Green
     Write-Host (Get-Message 'RouteCount' @($result.Count))
@@ -408,6 +424,15 @@ try {
     Write-Host (Get-Message 'Import')
 }
 catch {
+    if ($PassThru) {
+        return [PSCustomObject]@{
+            Success      = $false
+            RouteCount   = 0
+            OutputPath   = $OutputPath
+            ErrorMessage = $_.Exception.Message
+        }
+    }
+
     Write-Host ''
     Write-Host (Get-Message 'Error' @($_.Exception.Message)) -ForegroundColor Red
     exit 1

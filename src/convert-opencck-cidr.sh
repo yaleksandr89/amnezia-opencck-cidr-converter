@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 PROJECT_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
 DEFAULT_OUTPUT="$PROJECT_ROOT/amnezia-opencck-cidr.json"
+AWK_CONVERTER="$SCRIPT_DIR/lib/convert-opencck-cidr.awk"
 
 SOURCE_URL=""
 INPUT_PATH=""
@@ -11,6 +12,7 @@ OUTPUT_PATH=""
 TEMP_INPUT=""
 TEMP_COUNT=""
 LANGUAGE="auto"
+MACHINE_READABLE=0
 
 detect_language() {
     local locale_value
@@ -126,6 +128,7 @@ cleanup() {
     if [ -n "$TEMP_INPUT" ] && [ -f "$TEMP_INPUT" ]; then
         rm -f -- "$TEMP_INPUT"
     fi
+
     if [ -n "$TEMP_COUNT" ] && [ -f "$TEMP_COUNT" ]; then
         rm -f -- "$TEMP_COUNT"
     fi
@@ -141,31 +144,31 @@ fail() {
 
 usage() {
     if [ "$LANGUAGE" = "ru" ]; then
-        cat <<'USAGE_RU'
-Использование:
-  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG]
-  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG]
-
-Параметры:
-  --source-url, -u   Ссылка OpenCCK
-  --input-path, -i   Локальный JSON в формате OpenCCK
-  --output-path, -o  Путь к результирующему JSON
-  --language, -l     Язык интерфейса: auto, ru или en
-  --help, -h         Показать справку
-USAGE_RU
+        printf '%s\n' \
+            'Использование:' \
+            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '' \
+            'Параметры:' \
+            '  --source-url, -u   Ссылка OpenCCK' \
+            '  --input-path, -i   Локальный JSON в формате OpenCCK' \
+            '  --output-path, -o  Путь к результирующему JSON' \
+            '  --language, -l     Язык интерфейса: auto, ru или en' \
+            '  --machine-readable Машинный формат результата для TUI' \
+            '  --help, -h         Показать справку'
     else
-        cat <<'USAGE_EN'
-Usage:
-  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG]
-  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG]
-
-Options:
-  --source-url, -u   OpenCCK URL
-  --input-path, -i   Local JSON in OpenCCK format
-  --output-path, -o  Output JSON path
-  --language, -l     Interface language: auto, ru, or en
-  --help, -h         Show help
-USAGE_EN
+        printf '%s\n' \
+            'Usage:' \
+            '  convert-opencck-cidr.sh [--source-url URL] [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '  convert-opencck-cidr.sh --input-path FILE [--output-path FILE] [--language LANG] [--machine-readable]' \
+            '' \
+            'Options:' \
+            '  --source-url, -u   OpenCCK URL' \
+            '  --input-path, -i   Local JSON in OpenCCK format' \
+            '  --output-path, -o  Output JSON path' \
+            '  --language, -l     Interface language: auto, ru, or en' \
+            '  --machine-readable Machine-readable result for TUI' \
+            '  --help, -h         Show help'
     fi
 }
 
@@ -191,6 +194,10 @@ while [ "$#" -gt 0 ]; do
             set_language "$2"
             shift 2
             ;;
+        --machine-readable)
+            MACHINE_READABLE=1
+            shift
+            ;;
         --help|-h)
             usage
             exit 0
@@ -211,38 +218,38 @@ fi
 
 read_source_url() {
     if [ "$LANGUAGE" = "ru" ]; then
-        cat <<'MESSAGE_RU'
+        printf '%s\n' \
+            '' \
+            '============================================================' \
+            ' Конвертер CIDR OpenCCK для AmneziaVPN' \
+            '============================================================' \
+            '' \
+            '1. Откройте: https://iplist.opencck.org/' \
+            '2. Выберите нужные ресурсы.' \
+            '3. Формат: Amnezia.' \
+            '4. Тип данных: IP-зоны IPv4 (CIDR).' \
+            '' \
+            'ВАЖНО: пункт «Сохранить как файл» должен быть выключен.' \
+            'Скопируйте длинную ссылку из нижнего поля страницы.' \
+            ''
 
-============================================================
- Конвертер CIDR OpenCCK для AmneziaVPN
-============================================================
-
-1. Откройте: https://iplist.opencck.org/
-2. Выберите нужные ресурсы.
-3. Формат: Amnezia.
-4. Тип данных: IP-зоны IPv4 (CIDR).
-
-ВАЖНО: пункт «Сохранить как файл» должен быть выключен.
-Скопируйте длинную ссылку из нижнего поля страницы.
-
-MESSAGE_RU
         printf 'Вставьте ссылку OpenCCK и нажмите Enter: '
     else
-        cat <<'MESSAGE_EN'
+        printf '%s\n' \
+            '' \
+            '============================================================' \
+            ' OpenCCK CIDR Converter for AmneziaVPN' \
+            '============================================================' \
+            '' \
+            '1. Open: https://iplist.opencck.org/' \
+            '2. Select the required resources.' \
+            '3. Format: Amnezia.' \
+            '4. Data type: IPv4 CIDR ranges.' \
+            '' \
+            'IMPORTANT: disable the "Save as file" option.' \
+            'Copy the long URL from the field at the bottom of the page.' \
+            ''
 
-============================================================
- OpenCCK CIDR Converter for AmneziaVPN
-============================================================
-
-1. Open: https://iplist.opencck.org/
-2. Select the required resources.
-3. Format: Amnezia.
-4. Data type: IPv4 CIDR ranges.
-
-IMPORTANT: disable the "Save as file" option.
-Copy the long URL from the field at the bottom of the page.
-
-MESSAGE_EN
         printf 'Paste the OpenCCK URL and press Enter: '
     fi
 
@@ -304,12 +311,19 @@ fi
 
 if [ -n "$SOURCE_URL" ]; then
     normalize_and_validate_url "$SOURCE_URL"
-    message downloading
+
+    if [ "$MACHINE_READABLE" -eq 0 ]; then
+        message downloading
+    fi
+
     download_source
 else
     [ -f "$INPUT_PATH" ] || fail "$(message file_missing "$INPUT_PATH")"
     [ -s "$INPUT_PATH" ] || fail "$(message file_empty)"
-    message reading_file "$INPUT_PATH"
+
+    if [ "$MACHINE_READABLE" -eq 0 ]; then
+        message reading_file "$INPUT_PATH"
+    fi
 fi
 
 OUTPUT_DIR=$(dirname -- "$OUTPUT_PATH")
@@ -320,144 +334,9 @@ set +e
 awk \
     -v count_file="$TEMP_COUNT" \
     -v invalid_cidr_prefix="$(message invalid_cidr_prefix)" \
-    -v no_valid_routes="$(message no_valid_routes)" '
-function is_ipv4_cidr(value, parts, address, prefix, octets, i) {
-    if (value !~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\/[0-9]+$/) {
-        return 0
-    }
-
-    split(value, parts, "/")
-    address = parts[1]
-    prefix = parts[2] + 0
-
-    if (prefix < 0 || prefix > 32 || parts[2] !~ /^[0-9]+$/) {
-        return 0
-    }
-
-    if (split(address, octets, ".") != 4) {
-        return 0
-    }
-
-    for (i = 1; i <= 4; i++) {
-        if (octets[i] !~ /^[0-9]+$/ || octets[i] + 0 < 0 || octets[i] + 0 > 255) {
-            return 0
-        }
-    }
-
-    return 1
-}
-
-function finish_string() {
-    if (string_role == "key") {
-        current_key = token
-        state = "after_key"
-    } else if (string_role == "value") {
-        if (current_key == "hostname") {
-            cidr = token
-            gsub(/^[[:space:]]+|[[:space:]]+$/, "", cidr)
-
-            if (cidr != "") {
-                if (!is_ipv4_cidr(cidr)) {
-                    print invalid_cidr_prefix cidr > "/dev/stderr"
-                } else if (!(tolower(cidr) in seen)) {
-                    count++
-                    seen[tolower(cidr)] = 1
-                    routes[count] = cidr
-                }
-            }
-        }
-        state = "after_value"
-    }
-
-    token = ""
-    string_role = ""
-}
-
-BEGIN {
-    state = "search_key"
-    in_string = 0
-    escape = 0
-    token = ""
-    count = 0
-}
-
-{
-    line = $0 "\n"
-
-    for (i = 1; i <= length(line); i++) {
-        c = substr(line, i, 1)
-
-        if (in_string) {
-            if (escape) {
-                token = token c
-                escape = 0
-            } else if (c == "\\") {
-                escape = 1
-            } else if (c == "\"") {
-                in_string = 0
-                finish_string()
-            } else {
-                token = token c
-            }
-            continue
-        }
-
-        if (state == "search_key") {
-            if (c == "\"") {
-                in_string = 1
-                string_role = "key"
-                token = ""
-            }
-        } else if (state == "after_key") {
-            if (c ~ /[[:space:]]/) {
-                continue
-            }
-            if (c == ":") {
-                state = "before_value"
-            } else {
-                state = "search_key"
-            }
-        } else if (state == "before_value") {
-            if (c ~ /[[:space:]]/) {
-                continue
-            }
-            if (c == "\"") {
-                in_string = 1
-                string_role = "value"
-                token = ""
-            } else {
-                state = "after_value"
-            }
-        } else if (state == "after_value") {
-            if (c == "," || c == "}") {
-                state = "search_key"
-                current_key = ""
-            }
-        }
-    }
-}
-
-END {
-    if (count == 0) {
-        print no_valid_routes > "/dev/stderr"
-        exit 42
-    }
-
-    print "["
-    for (i = 1; i <= count; i++) {
-        print "  {"
-        printf "    \"hostname\": \"route-%06d.invalid\",\n", i
-        printf "    \"ip\": \"%s\"\n", routes[i]
-        if (i < count) {
-            print "  },"
-        } else {
-            print "  }"
-        }
-    }
-    print "]"
-    print count > count_file
-}
-' "$INPUT_PATH" > "$OUTPUT_PATH"
+    -v no_valid_routes="$(message no_valid_routes)" \
+    -f "$AWK_CONVERTER" \
+    "$INPUT_PATH" > "$OUTPUT_PATH"
 AWK_STATUS=$?
 set -e
 
@@ -470,7 +349,13 @@ ROUTE_COUNT=$(cat "$TEMP_COUNT")
 ABS_OUTPUT_DIR=$(CDPATH= cd -- "$(dirname -- "$OUTPUT_PATH")" && pwd)
 ABS_OUTPUT="$ABS_OUTPUT_DIR/$(basename -- "$OUTPUT_PATH")"
 
-printf '\n%s\n' "$(message done)"
-printf '%s\n' "$(message route_count "$ROUTE_COUNT")"
-printf '%s\n\n' "$(message output_file "$ABS_OUTPUT")"
-printf '%s\n' "$(message import_result)"
+if [ "$MACHINE_READABLE" -eq 1 ]; then
+    printf 'status=success\n'
+    printf 'route_count=%s\n' "$ROUTE_COUNT"
+    printf 'output_path=%s\n' "$ABS_OUTPUT"
+else
+    printf '\n%s\n' "$(message done)"
+    printf '%s\n' "$(message route_count "$ROUTE_COUNT")"
+    printf '%s\n\n' "$(message output_file "$ABS_OUTPUT")"
+    printf '%s\n' "$(message import_result)"
+fi

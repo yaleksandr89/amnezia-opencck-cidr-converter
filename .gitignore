@@ -31,3 +31,10 @@ Desktop.ini
 
 # PowerShell local data
 *.clixml
+
+# Local release builds
+/dist/
+
+# Build dependency cache
+/build/windows/cache/
+/build/unix/cache/
