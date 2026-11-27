@@ -1,0 +1,98 @@
+name: Standalone
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'Цели сборки (полный выпуск требует all)'
+        required: true
+        type: choice
+        default: all
+        options:
+          - linux
+          - windows
+          - macos
+          - linux,windows
+          - linux,macos
+          - windows,macos
+          - all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.targets }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    name: Windows / Standalone
+    if: inputs.targets == 'all' || contains(inputs.targets, 'windows')
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build Windows standalone package
+        shell: powershell
+        run: .\build\windows\build.ps1
+
+      - name: Upload Windows standalone package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: standalone-windows-x64
+          path: dist/amnezia-opencck-cidr-converter_windows_x64.zip
+          if-no-files-found: error
+
+  linux:
+    name: Linux / Standalone
+    if: inputs.targets == 'all' || contains(inputs.targets, 'linux')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build Unix standalone package
+        shell: bash
+        run: |
+          chmod +x ./build/unix/build.sh
+          chmod +x ./build/unix/launcher.sh
+          ./build/unix/build.sh
+
+      - name: Upload Unix standalone package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: standalone-linux-x64
+          path: dist/amnezia-opencck-cidr-converter_linux_x64.tar.gz
+          if-no-files-found: error
+
+  macos:
+    name: macOS / Standalone
+    if: inputs.targets == 'all' || contains(inputs.targets, 'macos')
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build Unix standalone package
+        shell: bash
+        run: |
+          chmod +x ./build/unix/build.sh
+          chmod +x ./build/unix/launcher.sh
+          ./build/unix/build.sh
+
+      - name: Upload Unix standalone package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: standalone-macos-arm64
+          path: dist/amnezia-opencck-cidr-converter_macos_arm64.tar.gz
+          if-no-files-found: error

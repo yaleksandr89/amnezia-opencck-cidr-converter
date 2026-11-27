@@ -191,7 +191,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 bash ./tests/run-tests.sh
 ```
 
-GitHub Actions ejecuta pruebas nativas en Windows, Ubuntu y macOS, compila los paquetes standalone y los guarda como artefactos de CI.
+GitHub Actions CI ejecuta pruebas nativas en Windows, Ubuntu y macOS. Las compilaciones se ejecutan por separado: abra [Actions → Standalone](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/standalone.yml), pulse **Run workflow** y seleccione una rama y `targets` (una o varias plataformas o `all`). Para una versión completa, seleccione `master` con CI correcto y `all`. Descargue los archivos de la sección Artifacts de esa ejecución y extraiga los paquetes listos para usar de los ZIP externos. El workflow no publica una versión automáticamente.
 
 Compile en una copia separada: los scripts sustituyen sus directorios y archivos en `dist/` y descargan `gum` verificando SHA-256.
 
