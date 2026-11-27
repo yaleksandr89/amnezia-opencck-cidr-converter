@@ -4,7 +4,9 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/SECURITY.md) | **Selected** | [Español](./SECURITY_es.md) | [中文](./SECURITY_zh.md) | [Français](./SECURITY_fr.md) | [Deutsch](./SECURITY_de.md) |
+| [Русский](../../../.github/SECURITY.md) | **Selected** | [Español](../es/SECURITY.md) | [中文](../zh/SECURITY.md) | [Français](../fr/SECURITY.md) | [Deutsch](../de/SECURITY.md) |
+
+This policy covers the current stable release and current master. Older versions are not maintained separately.
 
 This is a small project maintained by one person. If you find a security issue, please report it without publishing the details before a fix is available.
 
@@ -44,3 +46,5 @@ Do not publish keys, tokens, private configurations, or personal server addresse
 ## What happens next
 
 I will try to acknowledge the report, reproduce the issue, and prepare a fix. The project has no guaranteed SLA or bounty program. Please coordinate disclosure of technical details until a fix is available.
+
+[Advanced usage: CLI, TUI, source and tests](guides/advanced-usage.md) · [GitHub Security](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security)

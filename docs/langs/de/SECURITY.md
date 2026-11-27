@@ -4,7 +4,9 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/SECURITY.md) | [English](./SECURITY_en.md) | [Español](./SECURITY_es.md) | [中文](./SECURITY_zh.md) | [Français](./SECURITY_fr.md) | **Ausgewählt** |
+| [Русский](../../../.github/SECURITY.md) | [English](../en/SECURITY.md) | [Español](../es/SECURITY.md) | [中文](../zh/SECURITY.md) | [Français](../fr/SECURITY.md) | **Ausgewählt** |
+
+Diese Richtlinie gilt für die aktuelle stabile Version und master. Ältere Versionen werden nicht separat gepflegt.
 
 Dies ist ein kleines Projekt, das von einer Person gepflegt wird. Wenn Sie ein Sicherheitsproblem finden, melden Sie es bitte, ohne die Details vor einer verfügbaren Korrektur öffentlich zu machen.
 
@@ -44,3 +46,5 @@ Veröffentlichen Sie keine Schlüssel, Tokens, privaten Konfigurationen oder Adr
 ## Weitere Bearbeitung
 
 Ich werde versuchen, den Bericht zu bestätigen, das Problem zu reproduzieren und eine Korrektur vorzubereiten. Das Projekt hat weder ein garantiertes SLA noch ein Prämienprogramm. Technische Details sollten bis zur Veröffentlichung einer Korrektur abgestimmt werden.
+
+[Erweiterte Verwendung: CLI, TUI, Quellcode und Tests](guides/advanced-usage.md) · [GitHub Security](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security)

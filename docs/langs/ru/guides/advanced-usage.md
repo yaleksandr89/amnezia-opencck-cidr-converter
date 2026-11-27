@@ -4,15 +4,26 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| **Выбран** | [English](./advanced-usage_en.md) | [Español](./advanced-usage_es.md) | [中文](./advanced-usage_zh.md) | [Français](./advanced-usage_fr.md) | [Deutsch](./advanced-usage_de.md) |
+| **Выбран** | [English](../../en/guides/advanced-usage.md) | [Español](../../es/guides/advanced-usage.md) | [中文](../../zh/guides/advanced-usage.md) | [Français](../../fr/guides/advanced-usage.md) | [Deutsch](../../de/guides/advanced-usage.md) |
 
 В этой инструкции собраны параметры запуска, интерактивный TUI, ручной выбор языка, прямой запуск исходников, структура проекта и команды для разработки.
 
+## Запуск из исходников
+
+Для запуска из исходников клонируйте репозиторий и перейдите в его корень. Команды ниже выполняются из этого каталога.
+
+```bash
+git clone https://github.com/yaleksandr89/amnezia-opencck-cidr-converter.git
+cd amnezia-opencck-cidr-converter
+```
+
+Windows: Windows PowerShell 5.1 (CLI также поддерживает PowerShell 7). Linux/macOS: Bash, AWK и стандартные системные утилиты; для URL нужен `curl` или `wget`. `gum` 0.17.0 включён в готовые пакеты; для TUI из исходников нужен `gum` в PATH.
+
 ## Интерактивный TUI
 
-Готовые release-пакеты запускают интерактивный интерфейс автоматически.
+Готовые пакеты автоматически открывают TUI.
 
-Из исходников:
+TUI позволяет выбрать источник (ссылку или локальный JSON), папку результата и язык, повторить конвертацию и открыть папку с JSON.
 
 Windows:
 
@@ -21,23 +32,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
   -File .\src\convert-opencck-cidr-ui.ps1
 ```
 
-macOS и Linux:
+Linux/macOS:
 
 ```bash
 bash ./src/convert-opencck-cidr-ui.sh
 ```
 
-TUI поддерживает:
-
-- конвертацию по ссылке OpenCCK;
-- конвертацию локального JSON;
-- выбор папки результата;
-- переключение русского и английского языка;
-- повторную конвертацию без перезапуска;
-- открытие папки результата.
-
-`gum` требуется только при запуске Unix TUI напрямую из исходников. В standalone-пакетах он уже включён.
-
+Указывайте для результата отдельный путь, не совпадающий с исходным JSON. При выборе существующего результата успешная конвертация заменяет его. Перед импортом проверьте список маршрутов.
 
 ## Язык интерфейса
 
@@ -69,6 +70,8 @@ macOS и Linux:
 
 ## Параметризованный запуск
 
+Ссылки в примерах сокращены: вместо `https://iplist.opencck.org/?...` подставьте полную ссылку OpenCCK из браузера.
+
 ### Windows
 
 ```powershell
@@ -94,6 +97,7 @@ macOS и Linux:
 | `-InputPath` | Локальный JSON в формате OpenCCK |
 | `-OutputPath` | Путь к результирующему JSON |
 | `-Language` | `auto`, `ru` или `en` |
+| `-PassThru` | `Success`, `RouteCount`, `OutputPath`, `ErrorMessage` (`src/convert-opencck-cidr.ps1`) |
 
 ### macOS и Linux
 
@@ -149,26 +153,25 @@ bash ./src/convert-opencck-cidr.sh --language ru
 
 ```text
 .
-├── bin/                     # точки запуска
-│   ├── convert-opencck-cidr.cmd    # Windows
-│   └── convert-opencck-cidr.sh     # macOS и Linux
-├── src/                     # core и TUI
-│   ├── convert-opencck-cidr.ps1    # Windows core
-│   ├── convert-opencck-cidr.sh     # Unix core
-│   ├── convert-opencck-cidr-ui.ps1 # Windows TUI launcher
-│   ├── convert-opencck-cidr-ui.sh  # Unix TUI launcher
-│   ├── lib/                         # AWK-логика Unix core
-│   └── ui/                          # компоненты Windows/Unix TUI
+├── bin/
+│   ├── convert-opencck-cidr.cmd
+│   └── convert-opencck-cidr.sh
+├── src/
+│   ├── convert-opencck-cidr.ps1
+│   ├── convert-opencck-cidr.sh
+│   ├── convert-opencck-cidr-ui.ps1
+│   ├── convert-opencck-cidr-ui.sh
+│   ├── lib/
+│   └── ui/
 ├── build/
-│   ├── windows/             # standalone Windows package
-│   └── unix/                # standalone Linux/macOS packages
-├── tests/                   # автоматические тесты и тестовые данные
+│   ├── windows/
+│   └── unix/
+├── tests/
 ├── docs/
-│   ├── readme/              # переводы README
-│   ├── guides/              # расширенные инструкции
-│   ├── contributing/        # переводы правил участия
-│   └── security/            # переводы политики безопасности
-├── .github/                 # CI, шаблоны Issues и Pull Request
+│   ├── assets/
+│   └── langs/
+├── .github/
+├── AGENTS.md
 ├── LICENSE
 └── README.md
 ```
@@ -185,10 +188,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 ### macOS и Linux
 
 ```bash
-chmod +x ./tests/run-tests.sh
-./tests/run-tests.sh
+bash ./tests/run-tests.sh
 ```
 
-GitHub Actions запускает нативные тесты отдельно в Windows, Ubuntu и macOS и собирает standalone-пакеты для всех трёх платформ.
+GitHub Actions запускает нативные тесты на Windows, Ubuntu и macOS, собирает standalone-пакеты и сохраняет их в артефактах CI.
 
-Правила подготовки изменений находятся в [CONTRIBUTING.md](../../.github/CONTRIBUTING.md).
+Сборка выполняется в отдельном checkout: скрипты заменяют свои каталоги и архивы в `dist/` и скачивают `gum` с проверкой SHA-256.
+
+[Лицензия gum (MIT)](../../../../build/windows/third-party/GUM-LICENSE.txt).
+
+[Участие в разработке](../../../../.github/CONTRIBUTING.md) · [Политика безопасности](../../../../.github/SECURITY.md) · [README](../../../../README.md)

@@ -4,7 +4,7 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| **Выбран** | [English](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/contributing/CONTRIBUTING_en.md) | [Español](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/contributing/CONTRIBUTING_es.md) | [中文](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/contributing/CONTRIBUTING_zh.md) | [Français](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/contributing/CONTRIBUTING_fr.md) | [Deutsch](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/contributing/CONTRIBUTING_de.md) |
+| **Выбран** | [English](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/en/CONTRIBUTING.md) | [Español](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/es/CONTRIBUTING.md) | [中文](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/zh/CONTRIBUTING.md) | [Français](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/fr/CONTRIBUTING.md) | [Deutsch](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/de/CONTRIBUTING.md) |
 
 Спасибо за интерес к проекту.
 
@@ -24,6 +24,8 @@
 Изменение логики конвертации должно быть внесено в обе реализации либо явно обосновано как платформенное.
 
 Пользовательские сообщения поддерживают русский и английский языки. При добавлении или изменении сообщения обновите обе локализации.
+
+Публичные сообщения и документацию синхронизируйте во всех шести локализациях.
 
 ## Ветки
 
@@ -57,7 +59,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 macOS и Linux:
 
 ```bash
-./tests/run-tests.sh
+bash ./tests/run-tests.sh
 ```
 
 ## Pull Request
@@ -72,3 +74,5 @@ macOS и Linux:
 - требуется ли обновление документации.
 
 Не добавляйте в репозиторий приватные конфигурации, ключи, токены, адреса личных серверов и сгенерированные списки маршрутов.
+
+[Расширенное использование: CLI, TUI, исходники и тесты](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/ru/guides/advanced-usage.md) · [Политика безопасности](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/.github/SECURITY.md)

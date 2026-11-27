@@ -4,7 +4,7 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/CONTRIBUTING.md) | **Selected** | [Español](./CONTRIBUTING_es.md) | [中文](./CONTRIBUTING_zh.md) | [Français](./CONTRIBUTING_fr.md) | [Deutsch](./CONTRIBUTING_de.md) |
+| [Русский](../../../.github/CONTRIBUTING.md) | **Selected** | [Español](../es/CONTRIBUTING.md) | [中文](../zh/CONTRIBUTING.md) | [Français](../fr/CONTRIBUTING.md) | [Deutsch](../de/CONTRIBUTING.md) |
 
 Thank you for your interest in the project.
 
@@ -24,6 +24,8 @@ The project contains two native implementations of the same behavior:
 Conversion logic changes must be applied to both implementations unless a platform-specific difference is explicitly justified.
 
 User-facing messages support Russian and English. Update both localizations when adding or changing a message.
+
+Keep all six documentation locales in sync.
 
 ## Branches
 
@@ -57,7 +59,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 macOS and Linux:
 
 ```bash
-./tests/run-tests.sh
+bash ./tests/run-tests.sh
 ```
 
 ## Pull requests
@@ -72,3 +74,5 @@ Describe:
 - whether documentation needs to be updated.
 
 Do not commit private configurations, keys, tokens, personal server addresses, or generated route lists.
+
+[Advanced usage: CLI, TUI, source and tests](guides/advanced-usage.md) · [Security policy](SECURITY.md)

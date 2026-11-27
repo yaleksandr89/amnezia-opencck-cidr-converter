@@ -4,7 +4,9 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| **Выбран** | [English](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/security/SECURITY_en.md) | [Español](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/security/SECURITY_es.md) | [中文](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/security/SECURITY_zh.md) | [Français](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/security/SECURITY_fr.md) | [Deutsch](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/security/SECURITY_de.md) |
+| **Выбран** | [English](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/en/SECURITY.md) | [Español](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/es/SECURITY.md) | [中文](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/zh/SECURITY.md) | [Français](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/fr/SECURITY.md) | [Deutsch](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/de/SECURITY.md) |
+
+Политика распространяется на текущий стабильный релиз и актуальный master. Более ранние версии отдельно не сопровождаются.
 
 Проект небольшой и поддерживается одним автором. Если вы нашли проблему безопасности, сообщите о ней так, чтобы детали не оказались в открытом доступе раньше исправления.
 
@@ -44,3 +46,5 @@
 ## Что будет дальше
 
 Я постараюсь подтвердить получение отчёта, воспроизвести проблему и подготовить исправление. Фиксированного SLA и программы вознаграждений у проекта нет. Публикацию технических деталей лучше согласовать после выхода исправления.
+
+[Расширенное использование: CLI, TUI, исходники и тесты](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/docs/langs/ru/guides/advanced-usage.md) · [GitHub Security](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security)

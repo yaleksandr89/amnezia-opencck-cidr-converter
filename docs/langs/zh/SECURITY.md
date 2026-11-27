@@ -4,7 +4,9 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/SECURITY.md) | [English](./SECURITY_en.md) | [Español](./SECURITY_es.md) | **已选择** | [Français](./SECURITY_fr.md) | [Deutsch](./SECURITY_de.md) |
+| [Русский](../../../.github/SECURITY.md) | [English](../en/SECURITY.md) | [Español](../es/SECURITY.md) | **已选择** | [Français](../fr/SECURITY.md) | [Deutsch](../de/SECURITY.md) |
+
+本政策适用于当前稳定版本和 master。更早的版本不单独维护。
 
 这是一个由个人维护的小型项目。如果您发现安全问题，请在修复发布前不要公开技术细节。
 
@@ -44,3 +46,5 @@
 ## 后续处理
 
 我会尽量确认报告、复现问题并准备修复。项目不承诺固定 SLA，也没有漏洞奖励计划。在修复发布前，请协商技术细节的公开时间。
+
+[高级使用：CLI、TUI、源码和测试](guides/advanced-usage.md) · [GitHub Security](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security)

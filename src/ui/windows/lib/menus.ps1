@@ -1,4 +1,4 @@
-function Show-MainMenu
+﻿function Show-MainMenu
 {
     $choice = gum choose `
         (Get-UiText 'MainConvertUrl') `

@@ -4,7 +4,7 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/CONTRIBUTING.md) | [English](./CONTRIBUTING_en.md) | **Seleccionado** | [中文](./CONTRIBUTING_zh.md) | [Français](./CONTRIBUTING_fr.md) | [Deutsch](./CONTRIBUTING_de.md) |
+| [Русский](../../../.github/CONTRIBUTING.md) | [English](../en/CONTRIBUTING.md) | **Seleccionado** | [中文](../zh/CONTRIBUTING.md) | [Français](../fr/CONTRIBUTING.md) | [Deutsch](../de/CONTRIBUTING.md) |
 
 Gracias por su interés en el proyecto.
 
@@ -24,6 +24,8 @@ El proyecto contiene dos implementaciones nativas del mismo comportamiento:
 Los cambios en la lógica de conversión deben aplicarse a ambas implementaciones, salvo que una diferencia específica de plataforma esté claramente justificada.
 
 Los mensajes para el usuario admiten ruso e inglés. Actualice ambas localizaciones al añadir o modificar un mensaje.
+
+Mantenga sincronizadas las seis traducciones de la documentación.
 
 ## Ramas
 
@@ -57,7 +59,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 macOS y Linux:
 
 ```bash
-./tests/run-tests.sh
+bash ./tests/run-tests.sh
 ```
 
 ## Pull requests
@@ -72,3 +74,5 @@ Describa:
 - si es necesario actualizar la documentación.
 
 No añada configuraciones privadas, claves, tokens, direcciones de servidores personales ni listas de rutas generadas.
+
+[Uso avanzado: CLI, TUI, código fuente y pruebas](guides/advanced-usage.md) · [Política de seguridad](SECURITY.md)
