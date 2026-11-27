@@ -72,6 +72,9 @@ $Messages = @{
         UrlSites = 'В ссылке нет выбранных ресурсов (параметров site=...).'
         ReadFile = 'Читаю локальный файл: {0}'
         EmptyFile = 'Входной JSON-файл пуст.'
+        IncompleteJson = 'Во входном JSON есть незакрытый массив или объект.'
+        SamePath = 'Входной и выходной файлы должны различаться.'
+        OutputType = 'Путь результата должен указывать на обычный файл: {0}'
         Downloading = 'Скачиваю актуальный список OpenCCK...'
         EmptyResponse = 'OpenCCK вернул пустой ответ.'
         MissingHostname = 'Пропущена запись без поля hostname.'
@@ -101,6 +104,9 @@ $Messages = @{
         UrlSites = 'The URL does not contain selected resources (site=... parameters).'
         ReadFile = 'Reading local file: {0}'
         EmptyFile = 'The input JSON file is empty.'
+        IncompleteJson = 'The input JSON contains an unclosed array or object.'
+        SamePath = 'Input and output must be different files.'
+        OutputType = 'The output path must refer to an ordinary file: {0}'
         Downloading = 'Downloading the current OpenCCK list...'
         EmptyResponse = 'OpenCCK returned an empty response.'
         MissingHostname = 'Skipped an entry without the hostname field.'
@@ -284,6 +290,39 @@ function Test-IPv4Cidr {
     return $parsedIp.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork
 }
 
+function Convert-SourceJson {
+    param([string]$Json)
+
+    $jsonParameters = @{ InputObject = $Json }
+    if ((Get-Command ConvertFrom-Json).Parameters.ContainsKey('NoEnumerate')) {
+        # В PowerShell 7 ConvertFrom-Json может принять JSON с незакрытым контейнером.
+        # Строки и комментарии могут содержать скобки, не относящиеся к структуре.
+        # In PowerShell 7, ConvertFrom-Json can accept JSON with an unclosed container.
+        # Brackets inside strings and comments are not structural.
+        $tokenPattern = '"(?:[^"\\]|\\[\s\S])*"|''(?:[^''\\]|\\[\s\S])*''|//[^\r\n]*|/\*[\s\S]*?\*/|[\[\]{}]'
+        $depth = 0
+        foreach ($token in [regex]::Matches($Json, $tokenPattern)) {
+            if ($token.Length -ne 1) {
+                continue
+            }
+
+            if ($token.Value -in @('[', '{')) {
+                $depth++
+            } else {
+                $depth--
+            }
+        }
+        if ($depth -ne 0) {
+            throw (Get-Message 'IncompleteJson')
+        }
+
+        $jsonParameters.NoEnumerate = $true
+    }
+
+    $parsed = ConvertFrom-Json @jsonParameters
+    return ,$parsed
+}
+
 function Read-SourceItems {
     param(
         [Parameter()]
@@ -293,36 +332,41 @@ function Read-SourceItems {
         [string]$Path
     )
 
-    if (-not [string]::IsNullOrWhiteSpace($Path)) {
-        $resolvedInputPath = (Resolve-Path -LiteralPath $Path).ProviderPath
-        Write-Host (Get-Message 'ReadFile' @($resolvedInputPath))
-
-        $rawJson = [System.IO.File]::ReadAllText($resolvedInputPath)
+    $isLocal = -not [string]::IsNullOrWhiteSpace($Path)
+    if ($isLocal) {
+        Write-Host (Get-Message 'ReadFile' @($Path))
+        $rawJson = [System.IO.File]::ReadAllText($Path)
         if ([string]::IsNullOrWhiteSpace($rawJson)) {
             throw (Get-Message 'EmptyFile')
         }
+    } else {
+        $normalizedUrl = Normalize-SourceUrl -Value $Url
 
-        return @($rawJson | ConvertFrom-Json)
+        # Требуется некоторым старым установкам Windows PowerShell.
+        # Required by some older Windows PowerShell installations.
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+        Write-Host (Get-Message 'Downloading')
+        $response = Invoke-WebRequest -Uri $normalizedUrl -Method Get -TimeoutSec 120 -UseBasicParsing
+        $rawJson = $response.Content
+        if ($rawJson -is [byte[]]) {
+            $rawJson = [System.Text.Encoding]::UTF8.GetString($rawJson).TrimStart([char]0xFEFF)
+        }
+        if ([string]::IsNullOrWhiteSpace($rawJson)) {
+            throw (Get-Message 'EmptyResponse')
+        }
     }
 
-    $normalizedUrl = Normalize-SourceUrl -Value $Url
-
-    # Required by some older Windows PowerShell installations; harmless in PowerShell 7.
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    Write-Host (Get-Message 'Downloading')
-    $response = Invoke-RestMethod -Uri $normalizedUrl -Method Get -TimeoutSec 120
-
-    if ($null -eq $response) {
+    $parsed = Convert-SourceJson -Json $rawJson
+    if (-not $isLocal -and $null -eq $parsed) {
         throw (Get-Message 'EmptyResponse')
     }
 
-    return @($response)
+    return ,@($parsed)
 }
 
 function Convert-OpenCckItems {
     param(
-        [Parameter(Mandatory)]
         [object[]]$Items
     )
 
@@ -331,7 +375,7 @@ function Convert-OpenCckItems {
     $index = 0
 
     foreach ($item in $Items) {
-        if ($null -eq $item) {
+        if ($item -isnot [PSCustomObject]) {
             continue
         }
 
@@ -341,7 +385,10 @@ function Convert-OpenCckItems {
             continue
         }
 
-        $cidr = [string]$hostnameProperty.Value
+        $cidr = $hostnameProperty.Value
+        if ($cidr -isnot [string]) {
+            continue
+        }
         if ([string]::IsNullOrWhiteSpace($cidr)) {
             continue
         }
@@ -376,19 +423,41 @@ function Write-ResultJson {
         [string]$Path
     )
 
-    if ($Items.Count -eq 0) {
-        throw (Get-Message 'NoValidRoutes')
-    }
-
-    $outputDirectory = Split-Path -Parent $Path
-    if (-not [string]::IsNullOrWhiteSpace($outputDirectory) -and
-        -not (Test-Path -LiteralPath $outputDirectory)) {
-        New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+    $destination = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    if ($null -ne $destination -and ($destination.PSIsContainer -or
+        ($destination.Attributes -band [System.IO.FileAttributes]::ReparsePoint))) {
+        throw (Get-Message 'OutputType' @($Path))
     }
 
     $json = ConvertTo-Json -InputObject @($Items) -Depth 3
     $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
-    [System.IO.File]::WriteAllText($Path, $json, $utf8NoBom)
+    $bytes = $utf8NoBom.GetBytes($json)
+    $outputDirectory = [System.IO.Path]::GetDirectoryName($Path)
+    [void][System.IO.Directory]::CreateDirectory($outputDirectory)
+
+    $tempPath = [System.IO.Path]::Combine(
+        $outputDirectory, '.amnezia-opencck-output.' + [Guid]::NewGuid().ToString('N'))
+    $ownedTemp = $false
+    try {
+        $stream = [System.IO.File]::Open($tempPath, [System.IO.FileMode]::CreateNew)
+        $ownedTemp = $true
+        try {
+            $stream.Write($bytes, 0, $bytes.Length)
+        } finally {
+            $stream.Dispose()
+        }
+
+        if ([System.IO.File]::Exists($Path)) {
+            [System.IO.File]::Replace($tempPath, $Path, [NullString]::Value)
+        } else {
+            [System.IO.File]::Move($tempPath, $Path)
+        }
+        $ownedTemp = $false
+    } finally {
+        if ($ownedTemp) {
+            [System.IO.File]::Delete($tempPath)
+        }
+    }
 }
 
 try {
@@ -398,13 +467,21 @@ try {
         $SourceUrl = Read-OpenCckUrl
     }
 
-    $sourceItems = if ($PSCmdlet.ParameterSetName -eq 'File') {
-        Read-SourceItems -Path $InputPath
+    if ($PSCmdlet.ParameterSetName -eq 'File') {
+        $resolvedInputPath = [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $InputPath).ProviderPath)
+        if ([string]::Equals($resolvedInputPath, $OutputPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw (Get-Message 'SamePath')
+        }
+        $sourceItems = Read-SourceItems -Path $resolvedInputPath
     } else {
-        Read-SourceItems -Url $SourceUrl
+        $sourceItems = Read-SourceItems -Url $SourceUrl
     }
 
-    $result = Convert-OpenCckItems -Items $sourceItems
+    $result = @(Convert-OpenCckItems -Items $sourceItems)
+    if ($result.Count -eq 0) {
+        throw (Get-Message 'NoValidRoutes')
+    }
+
     Write-ResultJson -Items $result -Path $OutputPath
 
     if ($PassThru) {

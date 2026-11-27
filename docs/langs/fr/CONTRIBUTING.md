@@ -4,7 +4,7 @@
 
 | Русский | English | Español | 中文 | Français | Deutsch |
 |---|---|---|---|---|---|
-| [Русский](../../.github/CONTRIBUTING.md) | [English](./CONTRIBUTING_en.md) | [Español](./CONTRIBUTING_es.md) | [中文](./CONTRIBUTING_zh.md) | **Sélectionné** | [Deutsch](./CONTRIBUTING_de.md) |
+| [Русский](../../../.github/CONTRIBUTING.md) | [English](../en/CONTRIBUTING.md) | [Español](../es/CONTRIBUTING.md) | [中文](../zh/CONTRIBUTING.md) | **Sélectionné** | [Deutsch](../de/CONTRIBUTING.md) |
 
 Merci de votre intérêt pour le projet.
 
@@ -24,6 +24,8 @@ Le projet contient deux implémentations natives du même comportement :
 Les changements de logique de conversion doivent être appliqués aux deux implémentations, sauf si une différence propre à une plateforme est explicitement justifiée.
 
 Les messages destinés aux utilisateurs sont disponibles en russe et en anglais. Mettez à jour les deux localisations lors de l’ajout ou de la modification d’un message.
+
+Maintenez les six versions linguistiques de la documentation synchronisées.
 
 ## Branches
 
@@ -57,7 +59,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 macOS et Linux :
 
 ```bash
-./tests/run-tests.sh
+bash ./tests/run-tests.sh
 ```
 
 ## Pull requests
@@ -72,3 +74,5 @@ Décrivez :
 - si la documentation doit être mise à jour.
 
 N’ajoutez pas de configurations privées, clés, jetons, adresses de serveurs personnels ou listes de routes générées.
+
+[Utilisation avancée : CLI, TUI, sources et tests](guides/advanced-usage.md) · [Politique de sécurité](SECURITY.md)

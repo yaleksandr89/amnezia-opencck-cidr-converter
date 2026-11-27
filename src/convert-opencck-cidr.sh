@@ -11,6 +11,7 @@ INPUT_PATH=""
 OUTPUT_PATH=""
 TEMP_INPUT=""
 TEMP_COUNT=""
+TEMP_OUTPUT=""
 LANGUAGE="auto"
 MACHINE_READABLE=0
 
@@ -90,6 +91,12 @@ message() {
         ru:file_empty) printf 'Входной JSON-файл пуст.' ;;
         en:file_empty) printf 'The input JSON file is empty.' ;;
 
+        ru:same_path) printf 'Входной и выходной файлы должны различаться.' ;;
+        en:same_path) printf 'Input and output must be different files.' ;;
+
+        ru:output_type) printf 'Путь результата должен указывать на обычный файл: %s' "$1" ;;
+        en:output_type) printf 'The output path must refer to an ordinary file: %s' "$1" ;;
+
         ru:downloading) printf 'Скачиваю актуальный список OpenCCK...\n' ;;
         en:downloading) printf 'Downloading the current OpenCCK list...\n' ;;
 
@@ -102,8 +109,14 @@ message() {
         ru:no_valid_routes) printf 'Не удалось получить ни одной корректной CIDR-записи.' ;;
         en:no_valid_routes) printf 'No valid CIDR entries were found.' ;;
 
+        ru:invalid_json) printf 'Некорректный входной JSON.' ;;
+        en:invalid_json) printf 'Invalid input JSON.' ;;
+
         ru:convert_failed) printf 'Не удалось преобразовать входной JSON.' ;;
         en:convert_failed) printf 'Failed to convert the input JSON.' ;;
+
+        ru:output_failed) printf 'Не удалось сохранить результат: %s' "$1" ;;
+        en:output_failed) printf 'Failed to save the result: %s' "$1" ;;
 
         ru:done) printf 'Готово.' ;;
         en:done) printf 'Done.' ;;
@@ -132,8 +145,13 @@ cleanup() {
     if [ -n "$TEMP_COUNT" ] && [ -f "$TEMP_COUNT" ]; then
         rm -f -- "$TEMP_COUNT"
     fi
+
+    if [ -n "$TEMP_OUTPUT" ]; then
+        rm -f -- "$TEMP_OUTPUT"
+    fi
 }
-trap cleanup EXIT HUP INT TERM
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
 
 detect_language
 
@@ -319,6 +337,7 @@ if [ -n "$SOURCE_URL" ]; then
     download_source
 else
     [ -f "$INPUT_PATH" ] || fail "$(message file_missing "$INPUT_PATH")"
+    [ ! "$INPUT_PATH" -ef "$OUTPUT_PATH" ] || fail "$(message same_path)"
     [ -s "$INPUT_PATH" ] || fail "$(message file_empty)"
 
     if [ "$MACHINE_READABLE" -eq 0 ]; then
@@ -326,28 +345,34 @@ else
     fi
 fi
 
+case "$OUTPUT_PATH" in
+    */|.|..|*/.|*/..) fail "$(message output_type "$OUTPUT_PATH")" ;;
+esac
+if [ -L "$OUTPUT_PATH" ] || { [ -e "$OUTPUT_PATH" ] && [ ! -f "$OUTPUT_PATH" ]; }; then
+    fail "$(message output_type "$OUTPUT_PATH")"
+fi
+
 OUTPUT_DIR=$(dirname -- "$OUTPUT_PATH")
-mkdir -p -- "$OUTPUT_DIR"
+mkdir -p -- "$OUTPUT_DIR" || fail "$(message output_failed "$OUTPUT_PATH")"
+ABS_OUTPUT_DIR=$(CDPATH= cd -P -- "$OUTPUT_DIR" && pwd -P) \
+    || fail "$(message output_failed "$OUTPUT_PATH")"
+ABS_OUTPUT="$ABS_OUTPUT_DIR/$(basename -- "$OUTPUT_PATH")"
+TEMP_OUTPUT=$(mktemp "$ABS_OUTPUT_DIR/.amnezia-opencck-output.XXXXXX") \
+    || fail "$(message output_failed "$OUTPUT_PATH")"
 TEMP_COUNT=$(mktemp "${TMPDIR:-/tmp}/amnezia-opencck-count.XXXXXX")
 
-set +e
-awk \
-    -v count_file="$TEMP_COUNT" \
+if ! LC_ALL=C AMNEZIA_COUNT_FILE="$TEMP_COUNT" awk \
     -v invalid_cidr_prefix="$(message invalid_cidr_prefix)" \
     -v no_valid_routes="$(message no_valid_routes)" \
+    -v invalid_json="$(message invalid_json)" \
     -f "$AWK_CONVERTER" \
-    "$INPUT_PATH" > "$OUTPUT_PATH"
-AWK_STATUS=$?
-set -e
-
-if [ "$AWK_STATUS" -ne 0 ]; then
-    rm -f -- "$OUTPUT_PATH"
+    < "$INPUT_PATH" > "$TEMP_OUTPUT"; then
     fail "$(message convert_failed)"
 fi
 
 ROUTE_COUNT=$(cat "$TEMP_COUNT")
-ABS_OUTPUT_DIR=$(CDPATH= cd -- "$(dirname -- "$OUTPUT_PATH")" && pwd)
-ABS_OUTPUT="$ABS_OUTPUT_DIR/$(basename -- "$OUTPUT_PATH")"
+mv -f -- "$TEMP_OUTPUT" "$OUTPUT_PATH" || fail "$(message output_failed "$OUTPUT_PATH")"
+TEMP_OUTPUT=""
 
 if [ "$MACHINE_READABLE" -eq 1 ]; then
     printf 'status=success\n'

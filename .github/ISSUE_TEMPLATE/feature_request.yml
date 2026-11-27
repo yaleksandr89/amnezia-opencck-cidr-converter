@@ -5,6 +5,13 @@ labels:
   - enhancement
 body:
   - type: textarea
+    id: summary
+    attributes:
+      label: Summary / Краткое описание
+    validations:
+      required: true
+
+  - type: textarea
     id: problem
     attributes:
       label: Problem to solve / Какую проблему решает предложение
@@ -23,6 +30,16 @@ body:
     id: alternatives
     attributes:
       label: Alternatives considered / Рассмотренные альтернативы
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and compatibility / Область и совместимость
+      description: Affected platforms, CLI/TUI and dependencies. / Затронутые платформы, CLI/TUI и зависимости.
+    validations:
+      required: true
 
   - type: checkboxes
     id: checks
@@ -30,4 +47,6 @@ body:
       label: Checks / Проверки
       options:
         - label: I searched existing Issues and Discussions. / Я проверил существующие Issues и Discussions.
+          required: true
+        - label: I checked the latest stable release. / Я проверил актуальный стабильный релиз.
           required: true

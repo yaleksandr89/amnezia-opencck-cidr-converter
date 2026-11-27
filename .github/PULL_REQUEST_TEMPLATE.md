@@ -18,7 +18,8 @@ List the commands or verification steps.
 
 - [ ] No sensitive data is included. / Изменение не добавляет чувствительные данные.
 - [ ] Windows tests pass: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\run-tests.ps1`.
-- [ ] Unix tests pass: `./tests/run-tests.sh`.
+- [ ] Unix tests pass: `bash ./tests/run-tests.sh`.
 - [ ] Both implementations are synchronized or the difference is justified. / Обе реализации синхронизированы либо различие явно обосновано.
 - [ ] Russian and English messages are synchronized. / Русские и английские сообщения синхронизированы.
 - [ ] Documentation is updated when behavior changes. / Документация обновлена, если поведение изменилось.
+- [ ] All six documentation locales are synchronized. / Все шесть локализаций документации синхронизированы.

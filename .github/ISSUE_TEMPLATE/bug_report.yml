@@ -9,7 +9,18 @@ body:
       value: |
         Thank you for the report. Do not publish keys, tokens, personal server addresses, or other sensitive data.
 
+        Report vulnerabilities privately via the [security policy](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security/policy).
+
         Спасибо за отчёт. Не публикуйте ключи, токены, адреса личных серверов и другие чувствительные данные.
+
+        Сообщайте об уязвимостях приватно: [политика безопасности](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security/policy).
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary / Краткое описание
+    validations:
+      required: true
 
   - type: dropdown
     id: operating-system
@@ -96,4 +107,6 @@ body:
         - label: I removed sensitive data from all examples. / Я удалил из примеров чувствительные данные.
           required: true
         - label: I searched existing Issues and found no duplicate. / Я проверил существующие Issues и не нашёл такой же проблемы.
+          required: true
+        - label: I checked the latest stable release. / Я проверил актуальный стабильный релиз.
           required: true

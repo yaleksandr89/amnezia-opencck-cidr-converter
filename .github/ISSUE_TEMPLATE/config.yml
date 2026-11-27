@@ -6,3 +6,9 @@ contact_links:
   - name: General discussion / Общее обсуждение
     url: https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/discussions
     about: Ideas and discussions that are not reproducible bugs. / Идеи и обсуждения, которые не являются воспроизводимой ошибкой.
+  - name: Security policy / Политика безопасности
+    url: https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/security/policy
+    about: Report vulnerabilities privately. / Сообщайте об уязвимостях приватно.
+  - name: Contribution guide / Участие в разработке
+    url: https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/blob/master/.github/CONTRIBUTING.md
+    about: Read before contributing. / Прочитайте перед участием.

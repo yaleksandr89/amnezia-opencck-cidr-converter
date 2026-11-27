@@ -1,4 +1,4 @@
-$script:UiLanguage = 'en'
+﻿$script:UiLanguage = 'en'
 
 $UiMessages = @{
     en = @{
