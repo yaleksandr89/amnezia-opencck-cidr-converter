@@ -344,8 +344,6 @@ try {
     Assert-Equal 1 $LASTEXITCODE ("CMD did not propagate child failure. " + ($launcherOutput -join ' '))
     Assert-Equal $launcherBytes ([Convert]::ToBase64String([System.IO.File]::ReadAllBytes($literalOutput))) 'CMD failure changed prior bytes.'
     Assert-NoTempFiles
-
-    Write-Host 'All tests passed.' -ForegroundColor Green
 }
 finally {
     Pop-Location
@@ -353,3 +351,8 @@ finally {
         Remove-Item -LiteralPath $tempDirectory -Recurse -Force
     }
 }
+
+# Ожидаемый ненулевой код CMD не является кодом завершения всего набора тестов.
+# The expected nonzero CMD exit code is not the exit code of the entire test suite.
+Write-Host 'All tests passed.' -ForegroundColor Green
+exit 0
