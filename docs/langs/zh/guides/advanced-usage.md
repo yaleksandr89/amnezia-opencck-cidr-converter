@@ -191,7 +191,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 bash ./tests/run-tests.sh
 ```
 
-GitHub Actions 在 Windows、Ubuntu 和 macOS 上运行原生测试，构建 standalone 软件包并保存为 CI 产物。
+GitHub Actions CI 在 Windows、Ubuntu 和 macOS 上运行原生测试。构建单独执行：打开 [Actions → Standalone](https://github.com/yaleksandr89/amnezia-opencck-cidr-converter/actions/workflows/standalone.yml)，点击 **Run workflow**，选择分支和 `targets`（一个或多个平台，或 `all`）。完整发布请选择 CI 已通过的 `master` 和 `all`。从该运行的 Artifacts 区域下载压缩包，并从外层 ZIP 中解压可直接使用的软件包。此工作流不会自动发布 Release。
 
 请在独立工作副本中构建：脚本会替换 `dist/` 中对应的目录和压缩包，并下载 `gum` 进行 SHA-256 校验。
 
